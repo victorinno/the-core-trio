@@ -11,3 +11,7 @@ Na tela de ações, o período inicial apresentou apenas **Encerrar este bloco**
 No mapa em **Dia 1 · Manhã**, The Coast foi exibida como **disponível no fim de semana**. A introdução também informa que a viagem exige tempo, fim de semana e energia, enquanto os retornos para Casa e Quarto continuam sem custo.
 
 O atalho de destino da Coast fora do fim de semana abriu o feedback **“The Coast fica para o fim de semana”**, acompanhado da alternativa de reservar um dia com mais tempo e da indicação **Sem custo**. O retorno ao quadro semanal preservou os recursos iniciais.
+
+## Publicação no GitHub Pages
+
+O endereço `https://victorinno.github.io/the-core-trio/` respondeu com o título **The Croe Trio — Date Sim** depois do build e deploy concluídos com sucesso. O navegador conectado não disponibilizou a imagem da captura para essa navegação, portanto a confirmação pública registrada é de carregamento do documento e do título, não uma auditoria visual adicional.
