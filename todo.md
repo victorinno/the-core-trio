@@ -121,7 +121,7 @@
 - [x] Definir sessões exploratórias longas para os quatro epílogos da rota Pamela.
 - [x] Especificar a cobertura automatizada dos atalhos de teclado e das regressões corrigidas.
 - [x] Planejar uma avaliação de code-splitting do bundle Babylon com métricas e critérios de reversão.
-- [ ] Salvar e sincronizar o plano de QA priorizado no repositório canônico.
+- [x] Salvar e sincronizar o plano de QA priorizado no repositório canônico.
 
 ### Integração com sistemas existentes
 
