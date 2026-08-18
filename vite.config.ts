@@ -16,7 +16,7 @@ const LOG_DIR = path.join(PROJECT_ROOT, ".manus-logs");
 const MAX_LOG_SIZE_BYTES = 1 * 1024 * 1024; // 1MB per log file
 const TRIM_TARGET_BYTES = Math.floor(MAX_LOG_SIZE_BYTES * 0.6); // Trim to 60% to avoid constant re-trimming
 const isGithubPagesBuild = process.env.GITHUB_PAGES === "true";
-const githubPagesRepository = (process.env.GITHUB_PAGES_REPOSITORY || "the-croe-trio").replace(/^\/+|\/+$/g, "");
+const githubPagesRepository = (process.env.GITHUB_PAGES_REPOSITORY || "the-core-trio").replace(/^\/+|\/+$/g, "");
 
 type LogSource = "browserConsole" | "networkRequests" | "sessionReplay";
 
@@ -210,7 +210,9 @@ function vitePluginGithubPages(): Plugin {
     name: "github-pages-static-output",
     transformIndexHtml(html) {
       if (!isGithubPagesBuild) return html;
-      return html.replace(/\s*<script\s+defer\s+src="%VITE_ANALYTICS_ENDPOINT%\/umami"\s+data-website-id="%VITE_ANALYTICS_WEBSITE_ID%"><\/script>/g, "");
+      return html
+        .replace(/\s*<script\s+defer\s+src="%VITE_ANALYTICS_ENDPOINT%\/umami"\s+data-website-id="%VITE_ANALYTICS_WEBSITE_ID%"><\/script>/g, "")
+        .replace(/\s*<script\s+src="\/__manus__\/debug-collector\.js"\s+defer><\/script>/g, "");
     },
   };
 }

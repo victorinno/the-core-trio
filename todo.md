@@ -137,6 +137,12 @@
 - [x] Implementar e executar os testes de navegação, rotina, economia, Coast e Pamela; 8 cenários Playwright aprovados.
 - [x] Documentar comandos, cobertura e manutenção da suíte no repositório canônico.
 
+## Correção de publicação no GitHub Pages
+
+- [x] Reproduzir a tela em branco publicada e capturar erros de rede ou console.
+- [x] Corrigir a causa no bundle ou nos caminhos de publicação: base padrão corrigida de `the-croe-trio` para `the-core-trio`.
+- [ ] Publicar, retestar o endereço público e registrar a recuperação.
+
 ### Integração com sistemas existentes
 
 - [ ] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.

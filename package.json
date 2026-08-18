@@ -15,6 +15,7 @@
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:report": "playwright show-report",
+    "test:public": "node tools/public-pages-diagnose.mjs",
     "format": "prettier --write ."
   },
   "dependencies": {
