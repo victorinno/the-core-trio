@@ -18,6 +18,12 @@ Scene 3 now places Pamela beside the player in the foreground and Alice with Ada
 
 Scene 5 visibly places Pamela, the player and Jessica together around the couch and three mugs, making the Room for one more trio unambiguous.
 
+### Scene 5 framing revision
+
+The player will sit in a relaxed three-quarter angle facing slightly toward Pamela, so their shoulder and side profile are readable without requiring a fixed player identity. Pamela rests naturally against the player’s near shoulder; Jessica joins from the far side, oriented toward both of them. This creates a clear triangular relationship composition rather than placing the player’s back at the centre of the frame.
+
+The regenerated frame now places the player in a relaxed three-quarter view between Pamela and Jessica. All three faces and the three mugs are visible, giving the moment a natural mutual connection without the previous back-to-camera pose.
+
 The published sequence was reopened after the correction and begins normally at Scene 1 with the centered text treatment intact.
 
 The public Scene 3 check confirmed Pamela beside the player in the foreground, with Alice and Adam together in the bedroom background.

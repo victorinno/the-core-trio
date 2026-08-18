@@ -27,7 +27,7 @@ export const ASSETS: Record<PortraitKey | "penthouse" | "prologue01" | "prologue
   prologue02: assetPath("/manus-storage/croe-prologue-action-02-dinner_3d77c0b4.png", "croe-prologue-action-02-dinner.png"),
   prologue03: assetPath("/manus-storage/croe-prologue-action-03-distance_ef06c89e.png", "croe-prologue-action-03-distance.png"),
   prologue04: assetPath("/manus-storage/croe-prologue-action-04-coffee_a21249ea.png", "croe-prologue-action-04-coffee.png"),
-  prologue05: assetPath("/manus-storage/croe-prologue-action-05-trio-morning_e57593cb.png", "croe-prologue-action-05-trio-morning.png"),
+  prologue05: assetPath("/manus-storage/croe-prologue-action-05-trio-morning_3abca188.png", "croe-prologue-action-05-trio-morning.png"),
   prologue06: assetPath("/manus-storage/croe-prologue-action-06-alice-threshold_3e74eaf9.png", "croe-prologue-action-06-alice-threshold.png"),
   prologue07: assetPath("/manus-storage/croe-prologue-action-07-doorway_4692191b.png", "croe-prologue-action-07-doorway.png"),
   pamela: assetPath("/manus-storage/pamela_1k_60ff582e.png", "pamela_1k.png"),
