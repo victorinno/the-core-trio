@@ -30,7 +30,7 @@ const userAssets = path.join(assetRoot, "croe-trio");
 const penthouse = path.join(assetRoot, "croe-trio-penthouse-dawn.png");
 cpSync(userAssets, assetOutput, { recursive: true });
 cpSync(penthouse, path.join(assetOutput, "croe-trio-penthouse-dawn.png"));
-for (const filename of ["croe-prologue-01-gravity.png", "croe-prologue-02-expansion.png", "croe-prologue-03-first-mistake.png", "croe-prologue-04-unclaimed-hour.png", "croe-prologue-05-room-for-one-more.png", "croe-prologue-06-threshold.png", "croe-prologue-07-changed-centre.png"]) {
+for (const filename of ["croe-prologue-action-01-wedding.png", "croe-prologue-action-02-dinner.png", "croe-prologue-action-03-distance.png", "croe-prologue-action-04-coffee.png", "croe-prologue-action-05-trio-morning.png", "croe-prologue-action-06-alice-threshold.png", "croe-prologue-action-07-doorway.png"]) {
   cpSync(path.join(localAssets, filename), path.join(assetOutput, filename));
 }
 writeFileSync(path.join(outputDir, ".nojekyll"), "");

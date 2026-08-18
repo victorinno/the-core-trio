@@ -160,6 +160,13 @@
 - [x] Associar cada cena do prólogo ao seu fundo exclusivo e validar o contraste do texto.
 - [x] Publicar e retestar a sequência individualizada no GitHub Pages.
 
+## Quadros narrativos com personagens
+
+- [x] Definir os personagens, gestos e relações visuais de cada uma das sete cenas.
+- [x] Gerar sete ilustrações de ação com os personagens no momento narrado.
+- [x] Substituir os fundos ambientais pelas ilustrações e preservar a legibilidade do texto.
+- [ ] Validar e publicar a abertura ilustrada no GitHub Pages.
+
 ### Integração com sistemas existentes
 
 - [ ] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.
