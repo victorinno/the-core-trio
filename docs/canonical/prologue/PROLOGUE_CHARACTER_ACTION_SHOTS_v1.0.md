@@ -4,13 +4,19 @@
 |---:|---|---|---|
 | 1 | Alice and the player character | Adult courthouse-wedding moment; their hands meet over simple rings. | Lower left, dim interior wall. |
 | 2 | Jessica, Pamela, Alice, Adam and player | Jessica pulls an extra chair close at a laughing dinner table. | Lower left, dark edge of table and window. |
-| 3 | Pamela, Alice and Adam | Pamela wears the player’s oversized shirt on the couch while Alice and Adam share a distant laugh through the bedroom doorway. | Lower right, shadowed couch edge. |
-| 4 | Player and Pamela | The player holds coffee at dawn while Pamela quietly sits down beside them on the couch. | Lower left, blue sofa upholstery. |
-| 5 | Player, Pamela and Jessica | Pamela rests her head on the player’s shoulder as Jessica enters over the back of the couch with an inviting smile. | Lower left, calm sofa upholstery. |
+| 3 | Alice, Adam, Pamela and player | Alice and Adam are visibly together in the background, while Pamela sits beside the player in the foreground. | Lower right, shadowed couch edge. |
+| 4 | Player and Pamela | Pamela is the sole partner in the unclaimed-hour moment, sitting beside the player at dawn. | Lower left, blue sofa upholstery. |
+| 5 | Player, Pamela and Jessica | Pamela, the player and Jessica visibly form the Room for one more trio. | Lower left, calm sofa upholstery. |
 | 6 | Alice and Adam | Alice wakes in Adam’s bed, robe on, looking through the player’s empty neatly made room. | Lower right, shadowed hallway. |
 | 7 | Alice, player, Pamela and Jessica | Alice pauses in the doorway; Pamela curls against the player, while Jessica leans in with reflexive affection. | Lower left, dark threshold. |
 
 The player character remains compositionally partial—seen from profile, back or in low light—so that the game can retain player projection. All figures are clearly adult. The illustration is not a video; each is one held frame, with the existing text panel placed over its reserved low-detail zone.
+
+## Correction verification
+
+Scene 3 now places Pamela beside the player in the foreground and Alice with Adam in the distant bedroom, making the two relational spaces simultaneously visible. Scene 4 contains only Pamela and the player across the dawn coffee, with no other partner present.
+
+Scene 5 visibly places Pamela, the player and Jessica together around the couch and three mugs, making the Room for one more trio unambiguous.
 
 The runtime maps these moments directly to `prologue01` through `prologue07`; the individual action frames replace the prior environment-only variants.
 
