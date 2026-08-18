@@ -11,3 +11,7 @@ The local Playwright diagnostic found one canvas, the expected `prologue` state 
 ## Chromium composition check
 
 The direct Chromium capture verified Scene 1 visually. The blue-hour dinner background, Alice’s existing portrait, the dark translucent text panel, the English scene counter, title, copy and **Continue** action appear simultaneously with readable contrast. The reserved background and portrait zones do not compete with the narration panel. This confirms the opening is a static image-and-text sequence, not a video.
+
+## Public GitHub Pages check
+
+The published URL at `https://victorinno.github.io/the-core-trio/?demo=prologue` displayed the same Scene 1 after the normal WebGL initialization: dinner backdrop, Alice portrait, English copy, scene counter and **Continue** control. The static `game-assets` package therefore resolves correctly in the public build.
