@@ -130,6 +130,13 @@
 - [x] Executar e registrar PAM-EXP-01: a passagem manual revelou Tensão insuficientemente reduzida; o roteiro foi corrigido, o percurso automatizado alcançou Rotina a dois e a cena final foi validada visualmente.
 - [x] Sincronizar os resultados da Onda 1 e validar o build público.
 
+## Automação Playwright
+
+- [x] Mapear QA-01 a QA-12 e PAM-EXP-01 em cenários automatizados de navegador.
+- [x] Configurar Playwright, servidor de testes e uma ponte de estado estável para o canvas Babylon.
+- [x] Implementar e executar os testes de navegação, rotina, economia, Coast e Pamela; 8 cenários Playwright aprovados.
+- [x] Documentar comandos, cobertura e manutenção da suíte no repositório canônico.
+
 ### Integração com sistemas existentes
 
 - [ ] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.

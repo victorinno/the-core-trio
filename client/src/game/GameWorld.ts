@@ -28,6 +28,7 @@ import {
   withdraw,
   type ActivityId,
   type EconomyState,
+  type ItemId,
   type InvestmentProfile,
 } from "./economy";
 import { LOCATIONS, travelBlocks, type LocationId } from "./locations";
@@ -44,6 +45,43 @@ import { meetsRouteRequirement, OPENING_LINE, ROUTES, type ConversationBeat, typ
 
 type Screen = KeyboardScreen;
 type ActionCategory = KeyboardActionCategory;
+
+type E2eStatePatch = {
+  screen?: Screen;
+  activeRoute?: RouteId | null;
+  actionCategory?: ActionCategory;
+  location?: LocationId;
+  economy?: Partial<EconomyState>;
+  route?: Partial<RelationshipState> & { metrics?: Partial<RelationshipState["metrics"]> };
+};
+
+type E2eSnapshot = {
+  screen: Screen;
+  activeRoute: RouteId | null;
+  actionCategory: ActionCategory;
+  location: LocationId;
+  economy: EconomyState;
+  routes: Record<RouteId, RelationshipState>;
+  beat: { title: string; choiceIds: string[] } | null;
+  outcome: { title: string; line: string; detail: string } | null;
+};
+
+declare global {
+  interface Window {
+    __CROE_TEST__?: {
+      snapshot: () => E2eSnapshot;
+      reset: () => void;
+      setState: (input: E2eStatePatch) => void;
+      runActivity: (id: ActivityId) => void;
+      buy: (id: ItemId) => void;
+      invest: (profile: InvestmentProfile) => void;
+      travel: (destination: LocationId) => void;
+      openRoute: (route: RouteId) => void;
+      choose: (index: number) => void;
+      advance: () => void;
+    };
+  }
+}
 
 const INTENTION_COLORS: Record<Intention, string> = {
   Escutar: "#D69468",
@@ -76,6 +114,7 @@ export class GameWorld {
   private pulse: Ellipse | null = null;
   private readonly demoMode = new URLSearchParams(window.location.search).get("demo");
   private readonly demoEnabled = new URLSearchParams(window.location.search).has("demo");
+  private readonly e2eEnabled = import.meta.env.DEV && new URLSearchParams(window.location.search).get("e2e") === "1";
 
   constructor(private readonly scene: Scene) {
     this.ui = AdvancedDynamicTexture.CreateFullscreenUI("croe-ui", true, scene);
@@ -130,7 +169,71 @@ export class GameWorld {
       this.states.trio = applyEffect(this.states.trio, this.activeChoice.effect);
       this.activeScreen = "reflection";
     }
+    this.installE2eBridge();
     this.render();
+  }
+
+  private e2eSnapshot(): E2eSnapshot {
+    const route = this.requireRoute();
+    const state = this.activeRoute ? this.states[this.activeRoute] : null;
+    const beat = route && state && !state.complete ? this.resolveBeat(route, state) : null;
+    return structuredClone({
+      screen: this.activeScreen,
+      activeRoute: this.activeRoute,
+      actionCategory: this.actionCategory,
+      location: this.location,
+      economy: this.economy,
+      routes: this.states,
+      beat: beat ? { title: beat.title, choiceIds: beat.choices.map((choice) => choice.id) } : null,
+      outcome: route?.outcome && state?.complete ? route.outcome(state.metrics) : null,
+    });
+  }
+
+  private applyE2eState(input: E2eStatePatch) {
+    if (input.economy) {
+      this.economy = {
+        ...this.economy,
+        ...input.economy,
+        inventory: input.economy.inventory ? [...input.economy.inventory] : this.economy.inventory,
+        purchasedItemsThisWeek: input.economy.purchasedItemsThisWeek ? [...input.economy.purchasedItemsThisWeek] : this.economy.purchasedItemsThisWeek,
+        usedCareThisWeek: input.economy.usedCareThisWeek ? [...input.economy.usedCareThisWeek] : this.economy.usedCareThisWeek,
+      };
+    }
+    if (input.route) {
+      const current = this.states.trio;
+      this.states.trio = {
+        ...current,
+        ...input.route,
+        metrics: { ...current.metrics, ...input.route.metrics },
+        memories: input.route.memories ? [...input.route.memories] : current.memories,
+      };
+    }
+    if (input.location) this.location = input.location;
+    if (input.actionCategory) this.actionCategory = input.actionCategory;
+    if (input.activeRoute !== undefined) this.activeRoute = input.activeRoute;
+    if (input.screen) this.activeScreen = input.screen;
+    this.render();
+  }
+
+  private installE2eBridge() {
+    if (!this.e2eEnabled) return;
+    window.__CROE_TEST__ = {
+      snapshot: () => this.e2eSnapshot(),
+      reset: () => this.reset(),
+      setState: (input) => this.applyE2eState(input),
+      runActivity: (id) => this.runActivity(id),
+      buy: (id) => this.buy(id),
+      invest: (profile) => this.investMoney(profile),
+      travel: (destination) => this.travelTo(destination),
+      openRoute: (route) => this.openRoute(route),
+      choose: (index) => {
+        if (!this.activeRoute) return;
+        const route = ROUTES[this.activeRoute];
+        const choice = this.resolveBeat(route, this.states[this.activeRoute]).choices[index];
+        if (choice) this.choose(choice);
+      },
+      advance: () => this.advance(),
+    };
   }
 
   private configureScale() {
@@ -1375,6 +1478,7 @@ export class GameWorld {
   dispose() {
     window.removeEventListener("keydown", this.onKeyDown);
     window.removeEventListener("resize", this.onWindowResize);
+    if (this.e2eEnabled) delete window.__CROE_TEST__;
     this.clearDynamic();
     this.ui.dispose();
   }

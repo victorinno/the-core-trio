@@ -81,6 +81,10 @@ O jogo é renderizado em um canvas Babylon, portanto o DOM público expõe pouco
 
 O conjunto de mecânicas e a rota Pamela passaram na rodada depois de duas correções de navegação por teclado. Não houve bloqueio aberto de P0 ou P1 no encerramento. A maior limitação de evidência foi de captura: várias capturas em lote mostraram apenas o campo noturno enquanto o canvas preparava o WebGL, mas as interações manuais subsequentes na prévia apresentaram as telas, rotas e feedbacks esperados.
 
+## Execução automatizada Playwright
+
+Em 18 de agosto de 2026, a cobertura foi convertida em oito cenários Playwright executados em Chromium local. A suíte aprovou a inicialização e a navegação por teclado, sono e economia, inventário e cuidados repetidos, The Coast, gates de Pamela, os quatro epílogos e PAM-EXP-01 em **27,2 segundos**. O detalhamento de arquivos, comandos e manutenção está em `PLAYWRIGHT_AUTOMATION_EXECUTION_v1.0.md`.
+
 ## Defeitos encontrados e correções aplicadas
 
 | ID | Severidade | Defeito observado | Correção | Reteste |

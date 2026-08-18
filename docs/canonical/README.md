@@ -8,7 +8,7 @@
 | Mapa do jogo | `GAME_MAP_v1.0.md` | **1.0** | Canônico para locais, transições e uso de sistemas. |
 | Identidade de Pamela | `PAMELA_SOURCE_CARDS_10.json` | Fonte | Canônico para fatos de personagem. |
 | Integração sistêmica | `SYSTEMS_INTEGRATION_v1.0.md` | 1.0 | Referência complementar obrigatória para economia e rotina. |
-| Garantia de qualidade | `qa/QA_TEST_PLAN_AND_EXECUTION_v1.0.md` e `qa/QA_NEXT_STEPS_PLAN_v1.0.md` | **1.0** | Casos, resultados, regressões corrigidas, roteiro exploratório, automação e plano de bundle. |
+| Garantia de qualidade | `qa/QA_TEST_PLAN_AND_EXECUTION_v1.0.md`, `qa/QA_NEXT_STEPS_PLAN_v1.0.md` e `qa/PLAYWRIGHT_AUTOMATION_EXECUTION_v1.0.md` | **1.0** | Casos, resultados, regressões corrigidas, roteiro exploratório, automação Playwright e plano de bundle. |
 
 ## Ordem de leitura
 
