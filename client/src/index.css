@@ -1,0 +1,65 @@
+/* STYLE — Afterglow: ink-blue, rain-soft neo-noir; Clementine Glow carries every decisive warm note. */
+@import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: "Manrope", sans-serif;
+  --font-serif: "DM Serif Display", serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+}
+
+:root,
+.dark {
+  --background: oklch(0.11 0.03 260);
+  --foreground: oklch(0.94 0.025 70);
+  --border: oklch(0.74 0.05 60 / 22%);
+  --ring: oklch(0.7 0.16 42);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #071024;
+}
+
+body {
+  color: var(--foreground);
+  font-family: "Manrope", sans-serif;
+}
+
+.game-canvas {
+  position: fixed;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  outline: none;
+  background: #071024;
+}
+
+.game-canvas:focus-visible {
+  outline: 2px solid #f47642;
+  outline-offset: -6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-canvas {
+    scroll-behavior: auto;
+  }
+}
