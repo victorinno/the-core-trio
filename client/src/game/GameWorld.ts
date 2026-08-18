@@ -583,17 +583,17 @@ export class GameWorld {
     shade.width = "100%";
     shade.height = "100%";
     shade.background = "#050B1D";
-    shade.alpha = 0.56;
+    shade.alpha = 0.18;
     shade.thickness = 0;
     shade.isPointerBlocker = false;
     this.buildHeader(null);
-    this.addPortraits(scene.portraits, this.narrow ? 0.42 : 0.66);
 
-    const panel = this.add(this.panel("prologue-copy", this.narrow ? "88%" : "46%", this.narrow ? "450px" : "430px", "#B84A71"));
-    panel.horizontalAlignment = scene.alignment === "left" ? Control.HORIZONTAL_ALIGNMENT_LEFT : Control.HORIZONTAL_ALIGNMENT_RIGHT;
-    panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
-    panel.left = scene.alignment === "left" ? (this.narrow ? "6%" : "7%") : (this.narrow ? "-6%" : "-7%");
-    panel.top = this.narrow ? "-42px" : "-56px";
+    const panel = this.add(this.panel("prologue-copy", this.narrow ? "88%" : "58%", this.narrow ? "438px" : "404px", "#B84A71"));
+    panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+    panel.left = "0px";
+    panel.top = this.narrow ? "18px" : "12px";
+    panel.alpha = 0.58;
 
     const content = new StackPanel("prologue-content");
     content.width = "84%";
@@ -606,29 +606,33 @@ export class GameWorld {
     const count = this.text("prologue-count", `${this.prologueSceneIndex + 1} / ${PROLOGUE_SCENES.length}  ·  ${scene.chapter}`, this.narrow ? 10 : 12, "#E8B5C6");
     count.fontWeight = "700";
     count.height = "26px";
+    count.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
     content.addControl(count);
     const title = this.text("prologue-title", scene.title, this.narrow ? 34 : 48, "#FFF8F2");
     title.fontFamily = "DM Serif Display";
     title.fontWeight = "700";
     title.height = this.narrow ? "72px" : "82px";
+    title.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
     content.addControl(title);
     const divider = new Rectangle("prologue-divider");
     divider.width = "90px";
     divider.height = "3px";
     divider.background = "#B84A71";
     divider.thickness = 0;
-    divider.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+    divider.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
     content.addControl(divider);
     const copy = this.text("prologue-copy-text", scene.copy, this.narrow ? 17 : 20, "#F4E8E0");
     copy.height = this.narrow ? "162px" : "145px";
     copy.lineSpacing = "5px";
+    copy.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
     content.addControl(copy);
     const actionLabel = this.prologueSceneIndex === PROLOGUE_SCENES.length - 1 ? "Step into Week One" : "Continue";
     const action = this.createButton("prologue-advance", actionLabel, this.narrow ? "230px" : "250px", this.narrow ? "52px" : "56px", "#A93C63", () => this.advancePrologue());
-    action.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+    action.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
     content.addControl(action);
     const controls = this.text("prologue-controls", "ENTER TO CONTINUE  ·  S TO SKIP  ·  R TO RESTART", this.narrow ? 9 : 10, "#BBC7D7");
     controls.height = "18px";
+    controls.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
     content.addControl(controls);
   }
 

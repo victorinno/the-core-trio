@@ -167,6 +167,12 @@
 - [x] Substituir os fundos ambientais pelas ilustrações e preservar a legibilidade do texto.
 - [x] Validar e publicar a abertura ilustrada no GitHub Pages.
 
+## Composição central da abertura
+
+- [x] Remover os retratos laterais do prólogo para deixar as ilustrações narrativas integrais visíveis.
+- [x] Centralizar a narração em um painel de vidro translúcido de alta legibilidade.
+- [ ] Validar e publicar a composição revisada no GitHub Pages.
+
 ### Integração com sistemas existentes
 
 - [ ] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.
