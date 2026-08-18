@@ -20,3 +20,5 @@
 6. Consulte o relatório de QA antes de uma alteração no motor de rotinas, nos atalhos, no mapa ou na rota Pamela.
 
 > **Regra de conflito:** o card-fonte define quem Pamela é. O GDD canônico define como essa personagem funciona no jogo. O mapa define onde os sistemas acontecem. Documentos em `archive/` existem apenas para contexto histórico.
+
+- [UX Reference — Our Life v1.0](ux/UX_REFERENCE_OUR_LIFE_v1.0.md): original UX roadmap inspired by public accessibility, pace, and memory patterns.

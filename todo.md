@@ -185,6 +185,12 @@
 - [x] Mostrar o jogador em vista de três quartos na Cena 5, em vez de costas para a câmera.
 - [x] Regenerar, validar e publicar a composição refinada do trio.
 
+## Referência de UX — Our Life
+
+- [x] Pesquisar os padrões públicos de ritmo, escolhas, acessibilidade e relacionamento em Our Life.
+- [x] Comparar os padrões observados com a experiência atual de The Croe Trio.
+- [x] Documentar melhorias priorizadas sem replicar identidade visual, arte ou conteúdo do jogo de referência.
+
 ### Integração com sistemas existentes
 
 - [ ] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.
