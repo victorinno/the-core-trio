@@ -112,9 +112,9 @@
 ## Rodada de testes e relatório de QA
 
 - [x] Definir os casos de teste de navegação, rotina, economia, mapa, rota Pamela e recuperação narrativa.
-- [ ] Executar os fluxos prioritários na versão pública do GitHub Pages e registrar evidências.
-- [ ] Corrigir a regressão do atalho 5, que abre Saskia ao tentar acessar o mapa de conversas.
-- [ ] Redigir, salvar e sincronizar o documento de testes com resultados e pendências.
+- [x] Executar os fluxos prioritários na versão pública do GitHub Pages e registrar evidências.
+- [x] Corrigir as regressões de encadeamento de teclado que abriam uma rota ou escolha automaticamente a partir dos atalhos 5 e 1.
+- [x] Redigir, salvar e sincronizar o documento de testes com resultados e pendências.
 
 ### Integração com sistemas existentes
 

@@ -50,7 +50,7 @@ Para a economia, o fluxo recomendado é trabalho remoto, compra de ingredientes 
 
 | Caso | Resultado | Evidência e observações | Pendência |
 |---|---|---|---|
-| QA-01 | Aprovado | A URL pública `https://victorinno.github.io/the-core-trio/?demo=week` respondeu com o título **The Croe Trio — Date Sim**. O canvas permanece não semântico no DOM, conforme esperado para Babylon. | A captura visual não foi disponibilizada pelo navegador conectado; a interação será confirmada também na prévia. |
+| QA-01 | Aprovado | A URL pública `https://victorinno.github.io/the-core-trio/?demo=week` respondeu com o título **The Croe Trio — Date Sim** antes e depois da correção de navegação. A implantação do Pages do commit corrigido foi concluída com sucesso. O canvas permanece não semântico no DOM, conforme esperado para Babylon. | A captura visual pública não foi disponibilizada pelo navegador conectado; a interação foi confirmada na prévia com o mesmo build. |
 | QA-02 | Aprovado após correção | A sequência `5` abriu e manteve o mapa de conversas. A seleção posterior `1` abriu **Pamela & Jessica — Etapa 1/5**, com as três intenções visíveis, os atributos iniciais **V2 · C1 · S2 · T3** e nenhuma escolha aplicada automaticamente. | Nenhuma. |
 | QA-03 | Aprovado | A suíte executou dois blocos de descanso, bloqueou o sono antes da noite e confirmou que dormir avança o dia e restaura Energia 4. | Nenhuma. |
 | QA-04 | Aprovado | A suíte confirmou turno, contribuição, investimento, bloqueio acima de §80 e reinício do limite no fechamento semanal. | Nenhuma. |
@@ -66,3 +66,38 @@ Para a economia, o fluxo recomendado é trabalho remoto, compra de ingredientes 
 ## Limitações conhecidas do ambiente
 
 O jogo é renderizado em um canvas Babylon, portanto o DOM público expõe pouco conteúdo semântico para inspeção. Caso a captura do navegador não seja disponibilizada pelo ambiente, o relatório deve distinguir **carregamento público confirmado** de **verificação visual/interativa feita na prévia conectada**, sem afirmar uma evidência que não foi observada.
+
+## Resumo da rodada
+
+| Indicador | Resultado |
+|---|---:|
+| Casos P0 aprovados após correções | 9 de 9 |
+| Casos P1 aprovados | 3 de 3 |
+| Regressões encontradas | 2 |
+| Regressões corrigidas e retestadas | 2 |
+| Erros recentes no console do navegador | 0 |
+| Build estático para GitHub Pages | Aprovado |
+| Implantação do Pages do bundle corrigido | Aprovada |
+
+O conjunto de mecânicas e a rota Pamela passaram na rodada depois de duas correções de navegação por teclado. Não houve bloqueio aberto de P0 ou P1 no encerramento. A maior limitação de evidência foi de captura: várias capturas em lote mostraram apenas o campo noturno enquanto o canvas preparava o WebGL, mas as interações manuais subsequentes na prévia apresentaram as telas, rotas e feedbacks esperados.
+
+## Defeitos encontrados e correções aplicadas
+
+| ID | Severidade | Defeito observado | Correção | Reteste |
+|---|---|---|---|---|
+| QA-BUG-01 | Alta | Ao pressionar `5` no quadro semanal, o jogo abria o mapa de conversas e, no mesmo evento, caía automaticamente na quinta rota, Saskia. | O manipulador de teclado passou a encerrar o evento depois de abrir um destino da semana. | `5` mantém o mapa de conversas aberto. |
+| QA-BUG-02 | Alta | Ao pressionar `1` no mapa de conversas, o jogo abria Pamela e, no mesmo evento, selecionava automaticamente a primeira intenção. | O manipulador de teclado passou a encerrar o evento depois de abrir uma rota. | `1` abre Pamela na Etapa 1/5 com as três intenções intactas. |
+
+## Fluxos mínimos de regressão para a próxima versão
+
+| Ordem | Fluxo | Critério de aprovação |
+|---:|---|---|
+| 1 | Semana → `5` → mapa de conversas → `1` → Pamela | Cada tecla muda apenas uma tela; Pamela abre sem escolha automática. |
+| 2 | Pamela Etapa 1 → intenção → reflexão → `Enter` | A memória e os atributos atualizam; surge o interlúdio de rotina. |
+| 3 | Ação de cuidado repetida → sono → nova semana | O segundo cuidado não aumenta atributos; sono reinicia recursos e o limite semanal. |
+| 4 | Mapa de lugares → The Coast em dia útil e no sábado | Dia útil não consome recursos; sábado consome 1 bloco e 1 Energia. |
+| 5 | Rota Pamela sem contexto e com contexto alto | O date é bloqueado cedo e liberado apenas depois de Segurança, Clareza e capítulo suficientes. |
+
+## Pendências de QA para uma rodada futura
+
+O próximo ciclo pode concentrar-se em uma sessão exploratória de longa duração, percorrendo todos os quatro epílogos de Pamela manualmente e registrando a continuidade do diário depois do retorno ao mapa. Também é recomendável avaliar code-splitting do bundle principal, que continua acima do limiar de aviso de 500 kB, embora o build e a publicação tenham concluído sem erro.
