@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 
 const scriptsDir = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(scriptsDir, "..");
-const repository = process.env.GITHUB_PAGES_REPOSITORY || "the-croe-trio";
+const repository = process.env.GITHUB_PAGES_REPOSITORY || "the-core-trio";
 const outputDir = path.resolve(process.env.GITHUB_PAGES_OUTPUT || path.join(projectRoot, "..", `${repository}-pages`));
 const buildEnv = {
   ...process.env,

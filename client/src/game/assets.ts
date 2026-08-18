@@ -13,7 +13,7 @@ export type PortraitKey =
   | "spouse";
 
 const assetPath = (storedPath: string, filename: string) => {
-  if (import.meta.env.VITE_GITHUB_PAGES === "true") return `${import.meta.env.BASE_URL}game-assets/${filename}`;
+  if (import.meta.env.VITE_GITHUB_PAGES === "true" || import.meta.env.BASE_URL !== "/") return `${import.meta.env.BASE_URL}game-assets/${filename}`;
   if (import.meta.env.VITE_LOCAL_ART === "true") {
     const folder = filename === "croe-trio-penthouse-dawn.png" ? "" : "croe-trio/";
     return `/art/${folder}${filename}`;
