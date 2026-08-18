@@ -116,6 +116,13 @@
 - [x] Corrigir as regressões de encadeamento de teclado que abriam uma rota ou escolha automaticamente a partir dos atalhos 5 e 1.
 - [x] Redigir, salvar e sincronizar o documento de testes com resultados e pendências.
 
+## Plano de QA dos próximos passos
+
+- [x] Definir sessões exploratórias longas para os quatro epílogos da rota Pamela.
+- [x] Especificar a cobertura automatizada dos atalhos de teclado e das regressões corrigidas.
+- [x] Planejar uma avaliação de code-splitting do bundle Babylon com métricas e critérios de reversão.
+- [ ] Salvar e sincronizar o plano de QA priorizado no repositório canônico.
+
 ### Integração com sistemas existentes
 
 - [ ] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.
