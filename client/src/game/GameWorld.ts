@@ -20,13 +20,17 @@ import {
   contribute,
   createEconomyState,
   invest,
+  isWeekend,
   performActivity,
   slotName,
+  travel,
+  weekNumber,
   withdraw,
   type ActivityId,
   type EconomyState,
   type InvestmentProfile,
 } from "./economy";
+import { LOCATIONS, travelBlocks, type LocationId } from "./locations";
 import {
   applyEffect,
   createRelationshipStates,
@@ -37,7 +41,7 @@ import {
 } from "./relationship";
 import { OPENING_LINE, ROUTES, type Intention, type RouteId, type StoryChoice } from "./story";
 
-type Screen = "title" | "dashboard" | "actions" | "store" | "wallet" | "market" | "economy-feedback" | "map" | "conversation" | "reflection" | "finale";
+type Screen = "title" | "dashboard" | "actions" | "store" | "wallet" | "market" | "economy-feedback" | "world-map" | "location" | "map" | "conversation" | "reflection" | "finale";
 type ActionCategory = "work" | "care" | "social";
 
 const INTENTION_COLORS: Record<Intention, string> = {
@@ -65,6 +69,7 @@ export class GameWorld {
   private states = createRelationshipStates();
   private economy: EconomyState = createEconomyState();
   private actionCategory: ActionCategory = "work";
+  private location: LocationId = "apartment";
   private narrow = window.innerWidth < 720;
   private elapsed = 0;
   private pulse: Ellipse | null = null;
@@ -83,6 +88,11 @@ export class GameWorld {
 
     if (this.demoMode === "week") {
       this.activeScreen = "dashboard";
+    } else if (this.demoMode === "world") {
+      this.activeScreen = "world-map";
+    } else if (this.demoMode === "location") {
+      this.location = "downtown";
+      this.activeScreen = "location";
     } else if (this.demoMode === "actions") {
       this.activeScreen = "actions";
     } else if (this.demoMode === "store") {
@@ -291,6 +301,38 @@ export class GameWorld {
       metrics.width = this.narrow ? "170px" : "230px";
       bar.addControl(metrics);
     }
+
+    if (this.activeScreen !== "title") {
+      const nav = new StackPanel("persistent-place-nav");
+      nav.width = this.narrow ? "250px" : "290px";
+      nav.height = "38px";
+      nav.isVertical = false;
+      nav.spacing = this.narrow ? 5 : 7;
+      nav.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+      nav.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+      nav.left = this.narrow ? "276px" : "360px";
+      bar.addControl(nav);
+      const controls: Array<[string, string, () => void, string]> = [
+        ["nav-apartment", "CASA", () => this.returnToApartment(), "#B84A71"],
+        ["nav-bedroom", "QUARTO", () => this.returnToBedroom(), "#385A88"],
+        ["nav-map", "MAPA", () => this.openWorldMap(), "#285B57"],
+      ];
+      controls.forEach(([name, label, handler, color]) => {
+        const button = Button.CreateSimpleButton(name, label);
+        button.width = this.narrow ? "76px" : "88px";
+        button.height = this.narrow ? "30px" : "32px";
+        button.color = "#FFF8F2";
+        button.fontFamily = "Manrope";
+        button.fontSize = this.narrow ? 9 : 11;
+        button.fontWeight = "700";
+        button.background = color;
+        button.cornerRadius = 10;
+        button.thickness = 0;
+        button.hoverCursor = "pointer";
+        button.onPointerClickObservable.add(handler);
+        nav.addControl(button);
+      });
+    }
   }
 
   private addPortrait(key: PortraitKey, index: number, total: number, alpha = 1) {
@@ -424,7 +466,7 @@ export class GameWorld {
     content.spacing = this.narrow ? 8 : 8;
     panel.addControl(content);
 
-    const kicker = this.text("week-kicker", `SEMANA ${Math.ceil(this.economy.day / 7)} · DIA ${this.economy.day} · ${slotName(this.economy).toUpperCase()}`, this.narrow ? 12 : 14, "#E8B5C6");
+    const kicker = this.text("week-kicker", `SEMANA ${weekNumber(this.economy)} · DIA ${this.economy.day} · ${slotName(this.economy).toUpperCase()}${isWeekend(this.economy) ? " · FIM DE SEMANA" : ""}`, this.narrow ? 12 : 14, "#E8B5C6");
     kicker.fontWeight = "700";
     kicker.height = "24px";
     content.addControl(kicker);
@@ -444,6 +486,11 @@ export class GameWorld {
     const note = this.text("week-note", "Dinheiro abre possibilidades; presença, limite e contexto determinam o que uma ação significa.", this.narrow ? 12 : 14, "#B9C7D7");
     note.height = this.narrow ? "42px" : "34px";
     content.addControl(note);
+    if (this.economy.weeklyNotice) {
+      const weeklyNotice = this.text("weekly-notice", this.economy.weeklyNotice, this.narrow ? 11 : 13, "#E7C891");
+      weeklyNotice.height = this.narrow ? "42px" : "34px";
+      content.addControl(weeklyNotice);
+    }
 
     const buttons: Array<[string, string, () => void, string]> = [
       ["1 · Tempo", "Escolher uma forma de presença", () => this.openScreen("actions"), "#A93C63"],
@@ -484,7 +531,7 @@ export class GameWorld {
     heading.fontWeight = "700";
     heading.height = this.narrow ? "48px" : "56px";
     content.addControl(heading);
-    const prompt = this.text("action-prompt", "Ações de cuidado criam memórias; trabalho cria margem; dates só aparecem quando existe segurança.", this.narrow ? 10 : 12, "#B9C7D7");
+    const prompt = this.text("action-prompt", "Ações de cuidado criam memórias uma vez por semana; trabalho cria margem; dates exigem Segurança 3.", this.narrow ? 10 : 12, "#B9C7D7");
     prompt.height = this.narrow ? "34px" : "28px";
     content.addControl(prompt);
 
@@ -503,6 +550,7 @@ export class GameWorld {
     });
 
     const filteredActivities = ACTIVITIES.filter((activity) => {
+      if (activity.nightOnly && this.economy.slot !== 2) return false;
       if (this.actionCategory === "work") return activity.kind === "Rotina" || activity.kind === "Trabalho";
       if (this.actionCategory === "care") return activity.kind === "Cuidado";
       return activity.kind === "Date" || activity.kind === "Presente";
@@ -510,7 +558,8 @@ export class GameWorld {
     filteredActivities.forEach((activity, index) => {
       const suffix = activity.income ? `+§${activity.income}` : activity.cost ? `−§${activity.cost}` : activity.requires ? `usa item` : "sem custo";
       const color = activity.kind === "Trabalho" ? "#385A88" : activity.kind === "Date" ? "#A93C63" : activity.kind === "Cuidado" ? "#806342" : "#285B57";
-      const label = `${index + 1} · ${activity.kind.toUpperCase()} · ${activity.name}  (${suffix} · energia ${activity.energy})`;
+      const repeatedCare = activity.kind === "Cuidado" && this.economy.usedCareThisWeek.includes(activity.id);
+      const label = `${index + 1} · ${activity.kind.toUpperCase()} · ${activity.name}  (${suffix} · energia ${activity.energy})${repeatedCare ? " · retorno já aplicado esta semana" : ""}`;
       const button = this.createButton(`action-${activity.id}`, label, "100%", this.narrow ? "46px" : "50px", color, () => this.runActivity(activity.id));
       button.fontSize = this.narrow ? 10 : 13;
       content.addControl(button);
@@ -546,8 +595,9 @@ export class GameWorld {
     content.addControl(note);
     STORE_ITEMS.forEach((item) => {
       const owned = this.economy.inventory.includes(item.id);
-      const label = owned ? `${item.name} · guardado` : `${item.name} · §${item.cost}`;
-      const button = this.createButton(`buy-${item.id}`, label, "100%", this.narrow ? "48px" : "52px", owned ? "#285B57" : "#273C60", () => this.buy(item.id));
+      const purchasedThisWeek = this.economy.purchasedItemsThisWeek.includes(item.id);
+      const label = owned ? `${item.name} · guardado` : purchasedThisWeek ? `${item.name} · comprado nesta semana` : `${item.name} · §${item.cost}`;
+      const button = this.createButton(`buy-${item.id}`, label, "100%", this.narrow ? "48px" : "52px", owned || purchasedThisWeek ? "#285B57" : "#273C60", () => this.buy(item.id));
       button.fontSize = this.narrow ? 12 : 14;
       content.addControl(button);
     });
@@ -613,7 +663,7 @@ export class GameWorld {
     heading.fontWeight = "700";
     heading.height = this.narrow ? "58px" : "66px";
     content.addControl(heading);
-    const summary = this.text("market-summary", `Pessoal §${this.economy.personal} · Aplicado §${this.economy.invested}${this.economy.profile ? ` · ${PROFILE_DETAILS[this.economy.profile].name}` : ""}`, this.narrow ? 12 : 15, "#C6D0DD");
+    const summary = this.text("market-summary", `Pessoal §${this.economy.personal} · Aplicado §${this.economy.invested} · Nesta semana §${this.economy.investedThisWeek}/80${this.economy.profile ? ` · ${PROFILE_DETAILS[this.economy.profile].name}` : ""}`, this.narrow ? 12 : 15, "#C6D0DD");
     summary.height = this.narrow ? "38px" : "30px";
     content.addControl(summary);
     (Object.keys(PROFILE_DETAILS) as InvestmentProfile[]).forEach((profile) => {
@@ -665,6 +715,138 @@ export class GameWorld {
     const back = this.createButton("feedback-back", "Voltar à semana", this.narrow ? "220px" : "250px", this.narrow ? "52px" : "56px", "#A93C63", () => this.openDashboard());
     back.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     content.addControl(back);
+  }
+
+  private buildWorldMap() {
+    this.buildHeader(null);
+    const panel = this.add(this.panel("world-map-panel", this.narrow ? "90%" : "66%", this.narrow ? "690px" : "650px", "#86A9D4"));
+    panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+    panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+    panel.left = this.narrow ? "5%" : "5%";
+    panel.top = this.narrow ? "22px" : "30px";
+    const content = new StackPanel("world-map-content");
+    content.width = "87%";
+    content.height = "90%";
+    content.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    content.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+    content.isVertical = true;
+    content.spacing = this.narrow ? 5 : 6;
+    panel.addControl(content);
+
+    const kicker = this.text("world-map-kicker", `MAPA DE LUGARES · DIA ${this.economy.day} · ${slotName(this.economy).toUpperCase()}`, this.narrow ? 11 : 13, "#92B6D9");
+    kicker.fontWeight = "700";
+    kicker.height = "23px";
+    content.addControl(kicker);
+    const heading = this.text("world-map-heading", "Onde queres estar?", this.narrow ? 31 : 40);
+    heading.fontFamily = "DM Serif Display";
+    heading.fontWeight = "700";
+    heading.height = this.narrow ? "55px" : "64px";
+    content.addControl(heading);
+    const note = this.text("world-map-note", `Estás em ${LOCATIONS[this.location].title}. Viajar usa tempo; voltar para casa ou quarto é sempre sem custo. The Coast pede fim de semana e energia.`, this.narrow ? 11 : 13, "#C6D0DD");
+    note.height = this.narrow ? "34px" : "28px";
+    content.addControl(note);
+
+    const destinationIds: LocationId[] = ["apartment", "player-room", "downtown", "soleil", "market", "violet", "station", "coast"];
+    destinationIds.forEach((id, index) => {
+      const destination = LOCATIONS[id];
+      const blocks = travelBlocks(this.location, id);
+      const isHere = id === this.location;
+      const coastUnavailable = id === "coast" && !isWeekend(this.economy);
+      const cost = id === "coast" ? "tempo −1 bloco · energia −1" : blocks ? "tempo −1 bloco" : "sem custo de tempo";
+      const label = isHere
+        ? `${index + 1} · ${destination.title}  —  estás aqui`
+        : `${index + 1} · ${destination.title}  —  ${coastUnavailable ? "disponível no fim de semana" : cost}`;
+      const button = this.createButton(`destination-${id}`, label, "100%", this.narrow ? "43px" : "42px", isHere ? "#285B57" : coastUnavailable ? "#23324C" : "#162642", () => this.travelTo(id));
+      button.fontSize = this.narrow ? 11 : 14;
+      button.thickness = 1;
+      button.color = `${destination.accent}C8`;
+      content.addControl(button);
+    });
+  }
+
+  private buildLocation() {
+    const destination = LOCATIONS[this.location];
+    this.buildHeader(null);
+    const panel = this.add(this.panel("location-panel", this.narrow ? "90%" : "60%", this.narrow ? "590px" : "520px", destination.accent));
+    panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+    panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+    panel.left = this.narrow ? "5%" : "7%";
+    panel.top = this.narrow ? "24px" : "30px";
+    const content = new StackPanel("location-content");
+    content.width = "84%";
+    content.height = "86%";
+    content.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    content.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+    content.isVertical = true;
+    content.spacing = this.narrow ? 10 : 12;
+    panel.addControl(content);
+
+    const kicker = this.text("location-kicker", `${destination.label} · ${slotName(this.economy).toUpperCase()}`, this.narrow ? 11 : 13, destination.accent);
+    kicker.fontWeight = "700";
+    kicker.height = "24px";
+    content.addControl(kicker);
+    const heading = this.text("location-heading", destination.title, this.narrow ? 33 : 43);
+    heading.fontFamily = "DM Serif Display";
+    heading.fontWeight = "700";
+    heading.height = this.narrow ? "68px" : "78px";
+    content.addControl(heading);
+    const description = this.text("location-description", destination.description, this.narrow ? 16 : 19, "#FAF1E9");
+    description.height = this.narrow ? "104px" : "82px";
+    description.lineSpacing = "4px";
+    content.addControl(description);
+    const systems = this.text("location-systems", `Sistemas aqui: ${destination.systems}`, this.narrow ? 11 : 13, "#C6D0DD");
+    systems.height = this.narrow ? "44px" : "34px";
+    content.addControl(systems);
+
+    this.locationActions(destination.id).forEach(([name, label, handler, color]) => {
+      const button = this.createButton(name, label, "100%", this.narrow ? "48px" : "52px", color, handler);
+      button.fontSize = this.narrow ? 11 : 14;
+      content.addControl(button);
+    });
+    const mapButton = this.createButton("location-open-map", "Abrir mapa de destinos", this.narrow ? "220px" : "260px", this.narrow ? "48px" : "52px", "#385A88", () => this.openWorldMap());
+    mapButton.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+    content.addControl(mapButton);
+  }
+
+  private locationActions(id: LocationId): Array<[string, string, () => void, string]> {
+    if (id === "apartment") {
+      return [
+        ["apartment-week", "Abrir o quadro da semana", () => this.openDashboard(), "#A93C63"],
+        ["apartment-care", "Ir para a cozinha e escolher um cuidado", () => { this.actionCategory = "care"; this.openScreen("actions"); }, "#806342"],
+        ["apartment-talk", "Subir para a varanda e abrir conversas", () => this.openMap(), "#285B57"],
+      ];
+    }
+    if (id === "player-room") {
+      const actions: Array<[string, string, () => void, string]> = [
+        ["bedroom-rest", "Descansar e encerrar este bloco", () => this.runActivity("rest"), "#385A88"],
+        ["bedroom-week", "Ver agenda e carteiras", () => this.openDashboard(), "#A93C63"],
+      ];
+      if (this.economy.slot === 2) actions.splice(1, 0, ["bedroom-sleep", "Dormir até amanhã e recuperar energia", () => this.runActivity("sleep"), "#285B57"]);
+      return actions;
+    }
+    if (id === "downtown") {
+      return [
+        ["downtown-work", "Escolher rotina e trabalho", () => { this.actionCategory = "work"; this.openScreen("actions"); }, "#385A88"],
+        ["downtown-store", "Ir às compras com contexto", () => this.openScreen("store"), "#D69468"],
+      ];
+    }
+    if (id === "soleil") {
+      return [
+        ["soleil-remote", "Aceitar trabalho remoto", () => this.runActivity("remote"), "#385A88"],
+        ["soleil-care", "Ajudar Elise a fechar", () => this.runActivity("help-elise"), "#D6A995"],
+      ];
+    }
+    if (id === "market") {
+      return [["market-store", "Abrir loja e inventário", () => this.openScreen("store"), "#D69468"]];
+    }
+    if (id === "violet") {
+      return [["violet-date", "Ver dates e presentes", () => { this.actionCategory = "social"; this.openScreen("actions"); }, "#A57BE6"]];
+    }
+    if (id === "station") {
+      return [["station-talk", "Abrir o mapa de conversas", () => this.openMap(), "#93B99D"]];
+    }
+    if (!isWeekend(this.economy)) return [["coast-weekend", "O fim de semana acabou — regressa quando houver tempo", () => this.openWorldMap(), "#385A88"]];
+    return [["coast-talk", "Abrir conversas de fim de semana", () => this.openMap(), "#86A9D4"]];
   }
 
   private buildMap() {
@@ -915,6 +1097,44 @@ export class GameWorld {
     return this.activeRoute ? ROUTES[this.activeRoute] : null;
   }
 
+  private openWorldMap() {
+    this.activeRoute = null;
+    this.activeChoice = null;
+    this.activeScreen = "world-map";
+    this.render();
+  }
+
+  private travelTo(destination: LocationId) {
+    if (destination === "coast" && !isWeekend(this.economy)) {
+      this.applyEconomyResult({
+        economy: { ...this.economy, lastUpdate: { title: "The Coast fica para o fim de semana", text: "Reserva um dia com mais tempo antes de transformar a viagem numa obrigação. Até lá, a cidade continua disponível.", costLabel: "Sem custo" } },
+        relationships: null,
+      });
+      return;
+    }
+    const blocks = travelBlocks(this.location, destination);
+    const energyCost = destination === "coast" ? 1 : 0;
+    if (this.economy.energy < energyCost) {
+      this.applyEconomyResult(travel(this.economy, LOCATIONS[destination].title, blocks, energyCost));
+      return;
+    }
+    const result = travel(this.economy, LOCATIONS[destination].title, blocks, energyCost);
+    this.economy = result.economy;
+    this.location = destination;
+    this.activeRoute = null;
+    this.activeChoice = null;
+    this.activeScreen = "location";
+    this.render();
+  }
+
+  private returnToApartment() {
+    this.travelTo("apartment");
+  }
+
+  private returnToBedroom() {
+    this.travelTo("player-room");
+  }
+
   private openDashboard() {
     this.activeRoute = null;
     this.activeChoice = null;
@@ -999,6 +1219,7 @@ export class GameWorld {
   private reset() {
     this.states = createRelationshipStates();
     this.economy = createEconomyState();
+    this.location = "apartment";
     this.activeRoute = null;
     this.activeChoice = null;
     this.activeScreen = "title";
@@ -1011,6 +1232,13 @@ export class GameWorld {
       return;
     }
     if (this.activeScreen === "title" && event.key === "Enter") this.openDashboard();
+    if (event.key.toLowerCase() === "m") this.openWorldMap();
+    if (event.key.toLowerCase() === "h") this.returnToApartment();
+    if (event.key.toLowerCase() === "q") this.returnToBedroom();
+    if (this.activeScreen === "world-map" && ["1", "2", "3", "4", "5", "6", "7", "8"].includes(event.key)) {
+      const destinations: LocationId[] = ["apartment", "player-room", "downtown", "soleil", "market", "violet", "station", "coast"];
+      this.travelTo(destinations[Number(event.key) - 1]);
+    }
     if (this.activeScreen === "dashboard" && ["1", "2", "3", "4", "5"].includes(event.key)) {
       const destinations: Array<"actions" | "store" | "wallet" | "market" | "map"> = ["actions", "store", "wallet", "market", "map"];
       const destination = destinations[Number(event.key) - 1];
@@ -1029,7 +1257,7 @@ export class GameWorld {
       if (this.activeScreen === "reflection") this.advance();
       else this.openMap();
     }
-    if (["actions", "store", "wallet", "market", "economy-feedback", "map"].includes(this.activeScreen) && event.key === "Escape") {
+    if (["actions", "store", "wallet", "market", "economy-feedback", "world-map", "location", "map"].includes(this.activeScreen) && event.key === "Escape") {
       this.openDashboard();
     }
   }
@@ -1052,6 +1280,8 @@ export class GameWorld {
     if (this.activeScreen === "wallet") this.buildWallet();
     if (this.activeScreen === "market") this.buildMarket();
     if (this.activeScreen === "economy-feedback") this.buildEconomyFeedback();
+    if (this.activeScreen === "world-map") this.buildWorldMap();
+    if (this.activeScreen === "location") this.buildLocation();
     if (this.activeScreen === "map") this.buildMap();
     if (this.activeScreen === "conversation") this.buildConversation();
     if (this.activeScreen === "reflection") this.buildReflection();

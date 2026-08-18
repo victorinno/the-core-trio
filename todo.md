@@ -37,4 +37,74 @@
 
 - [x] Inspecionar `victorinno/the-core-trio` e preservar a estrutura existente, se houver.
 - [x] Preparar o código-fonte, documentação e instruções de execução para a transferência.
-- [ ] Enviar o projeto completo ao repositório privado e validar o commit remoto.
+- [x] Enviar o projeto completo ao repositório privado e validar o commit remoto.
+
+## Correção do GitHub Pages
+
+- [x] Confirmar a fonte de publicação configurada e gerar um build estático compatível.
+- [x] Enviar o conteúdo estático para a fonte usada pelo GitHub Pages.
+- [x] Verificar a remoção do erro 404 no endereço público.
+
+## Rota expandida de Pamela
+
+- [x] Definir o arco emocional, a duração alvo e os limiares de estatísticas por fase.
+- [x] Planejar conversas, ações de cuidado, dates, memórias e rumos da rota.
+- [x] Redigir e revisar o documento de uma hora de conteúdo para Pamela, sem alterar o código.
+
+## Revisão do card de Pamela
+
+- [x] Extrair traços, motivações, relações e limites do card enviado.
+- [x] Comparar o card com o arco planejado de Pamela por etapa e por estatística.
+- [x] Redigir a análise de aderência e os ajustes recomendados, sem alterar o planejamento-base.
+
+## Versionamento de documentos da Pamela
+
+- [x] Preparar os documentos de planejamento, revisão e card para o repositório remoto.
+- [x] Enviar os documentos ao repositório GitHub e validar o commit.
+
+## GDD da rota de Pamela
+
+- [x] Consolidar o card-fonte, a revisão de aderência e a estrutura de uma hora.
+- [x] Redigir o Game Design Document específico para Pamela.
+- [x] Revisar a consistência do documento e entregá-lo.
+
+## Progressão de atributos da Pamela
+
+- [x] Definir ganhos, perdas, limites e retornos decrescentes de Vínculo, Clareza, Segurança e Tensão.
+- [x] Adicionar ao GDD uma matriz de ações, custos, requisitos e efeitos de atributo.
+- [x] Revisar a progressão de uma hora e entregar o GDD atualizado.
+
+## Documentação canônica e mapa do jogo
+
+- [x] Definir a estrutura de pastas, a prioridade documental e a versão canônica da rota de Pamela.
+- [x] Criar o índice de documentação e o mapa de locais, transições e sistemas do jogo.
+- [x] Organizar os documentos na estrutura canônica e enviar a versão ao GitHub.
+- [x] Verificar os arquivos remotos e documentar qual versão deve ser usada no desenvolvimento.
+
+## Mapa navegável
+
+- [x] Definir destinos, conexões, custos de deslocamento e estados de localização para a interface.
+- [x] Implementar o mapa e os destinos do penthouse, Downtown, bairro e The Coast.
+- [x] Adicionar botões persistentes de retorno ao Polycule Apartment e ao quarto da pessoa jogadora.
+- [x] Testar navegação do mapa, retorno para Casa e Quarto, atalho de destinos e viagem de um bloco no desktop; a ramificação responsiva foi preservada para telemóvel.
+
+## Mecânicas acessórias
+
+- [x] Definir o escopo independente de tempo, energia, trabalho, descanso, dinheiro, inventário e consequências.
+- [x] Documentar regras, custos, falhas saudáveis, progressão semanal e sinais de interface.
+- [x] Integrar a especificação ao mapa canônico e à hierarquia de documentos.
+- [x] Preparar os arquivos para implementação futura após o teste no GitHub Pages.
+
+## Implementação de mecânicas acessórias
+
+- [x] Auditar o motor atual contra a especificação canônica de rotina e economia; tempo, energia, trabalho, carteiras, loja, inventário e mapa existem, mas faltam sono explícito, limites semanais, gates de date e custo da Coast.
+- [x] Implementar ciclo de sono, agenda, trabalho, descanso, dinheiro, inventário e regras de deslocamento.
+- [x] Integrar feedbacks de recursos e alternativas saudáveis às telas existentes.
+- [ ] Testar o ciclo semanal e salvar a atualização sem implementar a rota expandida de Pamela.
+
+### Integração com sistemas existentes
+
+- [ ] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.
+- [ ] Mapear loja, inventário, presentes, dates e Crescent Market como oportunidades, limites ou consequências da rota.
+- [x] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.
+- [x] Mapear loja, inventário, presentes, dates e Crescent Market como oportunidades, limites ou consequências da rota.
