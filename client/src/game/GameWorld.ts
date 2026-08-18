@@ -31,6 +31,7 @@ import {
   type InvestmentProfile,
 } from "./economy";
 import { LOCATIONS, travelBlocks, type LocationId } from "./locations";
+import { resolveKeyboardCommand, type KeyboardActionCategory, type KeyboardScreen } from "./keyboardNavigation";
 import {
   applyEffect,
   createRelationshipStates,
@@ -41,8 +42,8 @@ import {
 } from "./relationship";
 import { meetsRouteRequirement, OPENING_LINE, ROUTES, type ConversationBeat, type Intention, type NarrativeRoute, type RouteId, type StoryChoice } from "./story";
 
-type Screen = "title" | "dashboard" | "actions" | "store" | "wallet" | "market" | "economy-feedback" | "world-map" | "location" | "map" | "route-interlude" | "conversation" | "reflection" | "finale";
-type ActionCategory = "work" | "care" | "social";
+type Screen = KeyboardScreen;
+type ActionCategory = KeyboardActionCategory;
 
 const INTENTION_COLORS: Record<Intention, string> = {
   Escutar: "#D69468",
@@ -571,12 +572,7 @@ export class GameWorld {
       content.addControl(button);
     });
 
-    const filteredActivities = ACTIVITIES.filter((activity) => {
-      if (activity.nightOnly && this.economy.slot !== 2) return false;
-      if (this.actionCategory === "work") return activity.kind === "Rotina" || activity.kind === "Trabalho";
-      if (this.actionCategory === "care") return activity.kind === "Cuidado";
-      return activity.kind === "Date" || activity.kind === "Presente";
-    });
+    const filteredActivities = this.visibleActivities();
     filteredActivities.forEach((activity, index) => {
       const suffix = activity.income ? `+§${activity.income}` : activity.cost ? `−§${activity.cost}` : activity.requires ? `usa item` : "sem custo";
       const color = activity.kind === "Trabalho" ? "#385A88" : activity.kind === "Date" ? "#A93C63" : activity.kind === "Cuidado" ? "#806342" : "#285B57";
@@ -1246,6 +1242,15 @@ export class GameWorld {
     this.applyEconomyResult(result);
   }
 
+  private visibleActivities() {
+    return ACTIVITIES.filter((activity) => {
+      if (activity.nightOnly && this.economy.slot !== 2) return false;
+      if (this.actionCategory === "work") return activity.kind === "Rotina" || activity.kind === "Trabalho";
+      if (this.actionCategory === "care") return activity.kind === "Cuidado";
+      return activity.kind === "Date" || activity.kind === "Presente";
+    });
+  }
+
   private buy(id: import("./economy").ItemId) {
     this.applyEconomyResult(buyItem(this.economy, id));
   }
@@ -1312,40 +1317,31 @@ export class GameWorld {
   }
 
   private handleKeydown(event: KeyboardEvent) {
-    if (event.key.toLowerCase() === "r") {
-      this.reset();
+    const command = resolveKeyboardCommand(this.activeScreen, event.key);
+    if (!command) return;
+    if (command.type === "reset") return this.reset();
+    if (command.type === "open-dashboard" || command.type === "return-dashboard") return this.openDashboard();
+    if (command.type === "open-world-map") return this.openWorldMap();
+    if (command.type === "return-home") return this.returnToApartment();
+    if (command.type === "return-room") return this.returnToBedroom();
+    if (command.type === "travel") return this.travelTo(command.destination);
+    if (command.type === "open-screen") return this.openScreen(command.screen);
+    if (command.type === "open-map") return this.openMap();
+    if (command.type === "open-route") return this.openRoute(command.route);
+    if (command.type === "select-action-category") {
+      this.actionCategory = command.category;
+      return this.render();
+    }
+    if (command.type === "run-visible-activity") {
+      const activity = this.visibleActivities()[command.index];
+      if (activity) this.runActivity(activity.id);
       return;
     }
-    if (this.activeScreen === "title" && event.key === "Enter") this.openDashboard();
-    if (event.key.toLowerCase() === "m") this.openWorldMap();
-    if (event.key.toLowerCase() === "h") this.returnToApartment();
-    if (event.key.toLowerCase() === "q") this.returnToBedroom();
-    if (this.activeScreen === "world-map" && ["1", "2", "3", "4", "5", "6", "7", "8"].includes(event.key)) {
-      const destinations: LocationId[] = ["apartment", "player-room", "downtown", "soleil", "market", "violet", "station", "coast"];
-      this.travelTo(destinations[Number(event.key) - 1]);
-    }
-    if (this.activeScreen === "dashboard" && ["1", "2", "3", "4", "5"].includes(event.key)) {
-      const destinations: Array<"actions" | "store" | "wallet" | "market" | "map"> = ["actions", "store", "wallet", "market", "map"];
-      const destination = destinations[Number(event.key) - 1];
-      if (destination === "map") this.openMap();
-      else this.openScreen(destination);
-      return;
-    }
-    if (this.activeScreen === "map" && ["1", "2", "3", "4", "5"].includes(event.key)) {
-      const ids: RouteId[] = ["trio", "alice", "elise", "raven", "saskia"];
-      this.openRoute(ids[Number(event.key) - 1]);
-      return;
-    }
-    if (this.activeScreen === "conversation" && this.activeRoute && ["1", "2", "3"].includes(event.key)) {
-      const choice = ROUTES[this.activeRoute].beats[this.states[this.activeRoute].chapter].choices[Number(event.key) - 1];
-      this.choose(choice);
-    }
-    if ((this.activeScreen === "reflection" || this.activeScreen === "finale") && event.key === "Enter") {
-      if (this.activeScreen === "reflection") this.advance();
-      else this.openMap();
-    }
-    if (["actions", "store", "wallet", "market", "economy-feedback", "world-map", "location", "map", "route-interlude"].includes(this.activeScreen) && event.key === "Escape") {
-      this.openDashboard();
+    if (command.type === "advance") return this.advance();
+    if (command.type === "choose" && this.activeRoute) {
+      const route = ROUTES[this.activeRoute];
+      const choice = this.resolveBeat(route, this.states[this.activeRoute]).choices[command.index];
+      if (choice) this.choose(choice);
     }
   }
 

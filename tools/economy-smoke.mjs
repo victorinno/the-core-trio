@@ -130,6 +130,26 @@ assert.equal(pamelaRelationships.trio.metrics.clarity, 4, "O date de curiosidade
 pamelaRelationships.trio.chapter = 4;
 pamelaRelationships.trio = applyEffect(pamelaRelationships.trio, ROUTES.trio.beats[4].choices[0].effect);
 assert.equal(ROUTES.trio.outcome(pamelaRelationships.trio.metrics).title, "Rotina a dois", "O percurso de transparência e check-in deve alcançar o epílogo de Rotina a dois.");
+
+let pamelaRoutineEconomy = createEconomyState();
+let pamelaRoutineRelationships = createRelationshipStates();
+pamelaRoutineRelationships.trio = applyEffect(pamelaRoutineRelationships.trio, ROUTES.trio.beats[0].choices[0].effect);
+pamelaRoutineRelationships.trio.chapter = 1;
+result = performActivity(pamelaRoutineEconomy, pamelaRoutineRelationships, "tea-pamela");
+pamelaRoutineEconomy = result.economy;
+pamelaRoutineRelationships = result.relationships;
+pamelaRoutineRelationships.trio = applyEffect(pamelaRoutineRelationships.trio, ROUTES.trio.beats[1].choices[2].effect);
+pamelaRoutineRelationships.trio.chapter = 2;
+pamelaRoutineRelationships.trio = applyEffect(pamelaRoutineRelationships.trio, ROUTES.trio.beats[2].variants[0].choices[1].effect);
+pamelaRoutineRelationships.trio.chapter = 3;
+result = performActivity(pamelaRoutineEconomy, pamelaRoutineRelationships, "date-pamela-lowcost");
+pamelaRoutineEconomy = result.economy;
+pamelaRoutineRelationships = result.relationships;
+pamelaRoutineRelationships.trio = applyEffect(pamelaRoutineRelationships.trio, ROUTES.trio.beats[3].choices[2].effect);
+pamelaRoutineRelationships.trio.chapter = 4;
+pamelaRoutineRelationships.trio = applyEffect(pamelaRoutineRelationships.trio, ROUTES.trio.beats[4].choices[0].effect);
+assert.ok(pamelaRoutineRelationships.trio.metrics.tension <= 1, "PAM-EXP-01 deve reduzir Tensão a 1 ou menos antes do check-in final.");
+assert.equal(ROUTES.trio.outcome(pamelaRoutineRelationships.trio.metrics).title, "Rotina a dois", "O percurso completo de PAM-EXP-01 deve chegar ao epílogo Rotina a dois.");
 assert.equal(ROUTES.trio.outcome({ bond: 2, clarity: 1, safety: 2, tension: 4 }).title, "Pausa que preserva", "Tensão alta deve abrir um epílogo de pausa, não fechar a rota como falha.");
 assert.equal(ROUTES.trio.outcome({ bond: 2, clarity: 2, safety: 3, tension: 2 }).title, "Amizade íntima e honesta", "Segurança suficiente com vínculo ou clareza ainda baixos deve preservar uma amizade íntima válida.");
 assert.equal(meetsRouteRequirement({ bond: 2, clarity: 1, safety: 2, tension: 4 }, ROUTES.trio.beats[2].variants[0].requirement), false, "A conversa principal sobre Jessica deve converter-se em reparação quando faltam clareza e segurança.");
