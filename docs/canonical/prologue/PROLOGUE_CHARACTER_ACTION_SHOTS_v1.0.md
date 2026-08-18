@@ -24,6 +24,8 @@ The player will sit in a relaxed three-quarter angle facing slightly toward Pame
 
 The regenerated frame now places the player in a relaxed three-quarter view between Pamela and Jessica. All three faces and the three mugs are visible, giving the moment a natural mutual connection without the previous back-to-camera pose.
 
+The public refined build opened successfully and is ready for the final Scene 5 navigation check.
+
 The published sequence was reopened after the correction and begins normally at Scene 1 with the centered text treatment intact.
 
 The public Scene 3 check confirmed Pamela beside the player in the foreground, with Alice and Adam together in the bedroom background.

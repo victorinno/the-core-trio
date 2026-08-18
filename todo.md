@@ -183,7 +183,7 @@
 ## Refinamento de Room for one more
 
 - [x] Mostrar o jogador em vista de três quartos na Cena 5, em vez de costas para a câmera.
-- [ ] Regenerar, validar e publicar a composição refinada do trio.
+- [x] Regenerar, validar e publicar a composição refinada do trio.
 
 ### Integração com sistemas existentes
 
