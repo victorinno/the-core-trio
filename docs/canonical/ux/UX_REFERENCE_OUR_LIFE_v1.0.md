@@ -59,6 +59,8 @@ The first visible improvement is now present on the dashboard: an **A Access** c
 
 The panel was checked visually over the dashboard and contains session-scoped Text Size, High Contrast and Reduced Motion controls plus keyboard help. Unit tests cover the `A` command, and the Playwright navigation suite confirms that `A` opens the overlay without changing the current screen while Escape closes it.
 
+The GitHub Pages dashboard was checked after deployment and shows the **A Access** button in the top-right header, making the improvement discoverable before any keyboard shortcut is used.
+
 ## Guardrails
 
 The Croe Trio should preserve its own blue-glass penthouse identity, ensemble focus, adult-only cast and existing Safety/Clarity/Bond/Tension model. The reference’s soft, developmental pacing should inform **clarity of consent and choices**, not replace Croe Trio’s shared-household, polycule-specific systems. Preferences should be editable; the player should never be punished merely for choosing friendship, slowing down, or stepping back.
