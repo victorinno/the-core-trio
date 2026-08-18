@@ -27,3 +27,7 @@ A demo do epílogo com **V5 · C5 · S5 · T1** apresentou **Rotina a dois**, um
 Para o fluxo interativo, a abertura voltou a apresentar as três respostas consentidas da primeira etapa, com o atalho de teclado disponível para selecionar uma intenção e avançar à reflexão.
 
 No fluxo jogável, a primeira pergunta atualizou Clareza de **1 para 3**, registou a memória correspondente e abriu a reflexão. Ao avançar, a interface apresentou **A conversa continua na rotina**, com ações explícitas para escolher uma rotina ou ver os recursos antes da Etapa 2, confirmando que a progressão não salta a vida compartilhada.
+
+## Publicação da rota Pamela
+
+A execução do GitHub Pages associada ao commit de publicação da rota Pamela foi concluída com sucesso. O endereço público `https://victorinno.github.io/the-core-trio/?demo=pamela` respondeu com o título **The Croe Trio — Date Sim**. O navegador conectado não disponibilizou a imagem dessa captura, portanto a confirmação pública registrada é de implantação concluída e carregamento do documento, não uma auditoria visual adicional.
