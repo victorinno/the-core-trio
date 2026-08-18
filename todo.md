@@ -153,6 +153,13 @@
 - [x] Manter em inglês todos os textos visíveis do novo prólogo, seus controles e sua transição para a Semana 1.
 - [x] Validar a abertura no canvas, publicar e sincronizar o novo fluxo de início: testes, build, pacote de assets e revisão visual do Chromium aprovados.
 
+## Fundos individuais do prólogo
+
+- [x] Definir a composição, os personagens e a zona de texto dos sete fundos narrativos.
+- [x] Gerar sete fundos distintos com referência às artes existentes.
+- [x] Associar cada cena do prólogo ao seu fundo exclusivo e validar o contraste do texto.
+- [ ] Publicar e retestar a sequência individualizada no GitHub Pages.
+
 ### Integração com sistemas existentes
 
 - [ ] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.

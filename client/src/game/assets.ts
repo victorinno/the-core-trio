@@ -21,11 +21,15 @@ const assetPath = (storedPath: string, filename: string) => {
   return storedPath;
 };
 
-export const ASSETS: Record<PortraitKey | "penthouse" | "prologueDinner" | "prologueHallway" | "prologueDoorway", string> = {
+export const ASSETS: Record<PortraitKey | "penthouse" | "prologue01" | "prologue02" | "prologue03" | "prologue04" | "prologue05" | "prologue06" | "prologue07", string> = {
   penthouse: assetPath("/manus-storage/croe-trio-penthouse-dawn_1f6b31e7.png", "croe-trio-penthouse-dawn.png"),
-  prologueDinner: assetPath("/manus-storage/croe-prologue-dinner-window_129d0769.png", "croe-prologue-dinner-window.png"),
-  prologueHallway: assetPath("/manus-storage/croe-prologue-hallway-distance_990cd7a8.png", "croe-prologue-hallway-distance.png"),
-  prologueDoorway: assetPath("/manus-storage/croe-prologue-doorway-dawn_bc47ead7.png", "croe-prologue-doorway-dawn.png"),
+  prologue01: assetPath("/manus-storage/croe-prologue-01-gravity_74d4114e.png", "croe-prologue-01-gravity.png"),
+  prologue02: assetPath("/manus-storage/croe-prologue-02-expansion_96361fc1.png", "croe-prologue-02-expansion.png"),
+  prologue03: assetPath("/manus-storage/croe-prologue-03-first-mistake_62dbdc3f.png", "croe-prologue-03-first-mistake.png"),
+  prologue04: assetPath("/manus-storage/croe-prologue-04-unclaimed-hour_2cada1c4.png", "croe-prologue-04-unclaimed-hour.png"),
+  prologue05: assetPath("/manus-storage/croe-prologue-05-room-for-one-more_9ef3218f.png", "croe-prologue-05-room-for-one-more.png"),
+  prologue06: assetPath("/manus-storage/croe-prologue-06-threshold_fc9a1194.png", "croe-prologue-06-threshold.png"),
+  prologue07: assetPath("/manus-storage/croe-prologue-07-changed-centre_0315f7fd.png", "croe-prologue-07-changed-centre.png"),
   pamela: assetPath("/manus-storage/pamela_1k_60ff582e.png", "pamela_1k.png"),
   jessica: assetPath("/manus-storage/jessica_1k_01342195.png", "jessica_1k.png"),
   alice: assetPath("/manus-storage/alice_1k_535c4339.png", "alice_1k.png"),
