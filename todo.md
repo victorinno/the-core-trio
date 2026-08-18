@@ -158,7 +158,7 @@
 - [x] Definir a composição, os personagens e a zona de texto dos sete fundos narrativos.
 - [x] Gerar sete fundos distintos com referência às artes existentes.
 - [x] Associar cada cena do prólogo ao seu fundo exclusivo e validar o contraste do texto.
-- [ ] Publicar e retestar a sequência individualizada no GitHub Pages.
+- [x] Publicar e retestar a sequência individualizada no GitHub Pages.
 
 ### Integração com sistemas existentes
 

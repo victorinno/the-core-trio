@@ -19,3 +19,5 @@ The seven scenes now use `prologue01` through `prologue07` in the same order as 
 Scene 1 was confirmed in the local browser after canvas initialization. Its dark wedding-keepsake environment remains distinct from the previous shared dinner background, while the left narration panel stays readable and the Alice portrait retains visual priority on the right.
 
 Scene 2 was then advanced manually and confirmed with a different dinner-table background, the Jessica and Pamela portraits, and the same high-contrast narration panel. The first two scenes establish that the game changes both written beat and environmental image on each advance.
+
+The public GitHub Pages check also loaded Scene 1 with its individual background, Alice portrait and readable English panel after the expected canvas initialization interval.
