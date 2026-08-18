@@ -1329,10 +1329,12 @@ export class GameWorld {
       const destination = destinations[Number(event.key) - 1];
       if (destination === "map") this.openMap();
       else this.openScreen(destination);
+      return;
     }
     if (this.activeScreen === "map" && ["1", "2", "3", "4", "5"].includes(event.key)) {
       const ids: RouteId[] = ["trio", "alice", "elise", "raven", "saskia"];
       this.openRoute(ids[Number(event.key) - 1]);
+      return;
     }
     if (this.activeScreen === "conversation" && this.activeRoute && ["1", "2", "3"].includes(event.key)) {
       const choice = ROUTES[this.activeRoute].beats[this.states[this.activeRoute].chapter].choices[Number(event.key) - 1];

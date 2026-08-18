@@ -109,6 +109,13 @@
 - [x] Integrar ações de cuidado, presentes, dates e economia aos desbloqueios da rota.
 - [x] Testar caminhos de sucesso, pausa e reparação; build estático validado, pronto para salvar e sincronizar a entrega no GitHub.
 
+## Rodada de testes e relatório de QA
+
+- [x] Definir os casos de teste de navegação, rotina, economia, mapa, rota Pamela e recuperação narrativa.
+- [ ] Executar os fluxos prioritários na versão pública do GitHub Pages e registrar evidências.
+- [ ] Corrigir a regressão do atalho 5, que abre Saskia ao tentar acessar o mapa de conversas.
+- [ ] Redigir, salvar e sincronizar o documento de testes com resultados e pendências.
+
 ### Integração com sistemas existentes
 
 - [ ] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.

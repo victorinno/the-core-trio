@@ -36,6 +36,7 @@ assert.equal(economy.energy, 2, "A bebida e a receita de Pamela devem consumir d
 assert.equal(relationships.trio.metrics.bond, 4, "Cozinhar deve aumentar vínculo com Pamela.");
 assert.equal(relationships.trio.metrics.safety, 4, "Cozinhar deve aumentar segurança com Pamela.");
 assert.equal(relationships.trio.metrics.tension, 3, "Cozinhar não deve apagar uma tensão que ainda pede conversa.");
+assert.equal(buyItem(economy, "ingredients").economy.lastUpdate.title, "Compra repetida nesta semana", "Um item consumido não pode ser comprado novamente na mesma semana para repetir o mesmo gesto.");
 
 result = performActivity(economy, relationships, "shift");
 economy = result.economy;
@@ -96,6 +97,17 @@ const nextWeek = performActivity(weeklyState, createRelationshipStates(), "sleep
 assert.equal(nextWeek.day, 8, "O sono da noite de domingo deve iniciar a próxima semana.");
 assert.equal(nextWeek.investedThisWeek, 0, "O fechamento semanal deve liberar um novo limite de investimento.");
 assert.ok(nextWeek.weeklyNotice, "O início da semana deve emitir um aviso de fechamento do Crescent Market.");
+
+let jessicaEconomy = createEconomyState();
+let jessicaRelationships = createRelationshipStates();
+jessicaRelationships.trio.chapter = 2;
+jessicaRelationships.trio.metrics.clarity = 2;
+jessicaEconomy = buyItem(jessicaEconomy, "jessica-memento").economy;
+result = performActivity(jessicaEconomy, jessicaRelationships, "gift-jessica");
+jessicaEconomy = result.economy;
+jessicaRelationships = result.relationships;
+assert.equal(jessicaRelationships.trio.metrics.clarity, 3, "A lembrança contextual para Jessica deve aumentar Clareza somente depois de Pamela ter contexto para o gesto.");
+assert.equal(jessicaRelationships.trio.metrics.tension, 2, "A lembrança contextual para Jessica deve reduzir Tensão quando o gesto é escolhido com transparência.");
 
 let pamelaEconomy = createEconomyState();
 let pamelaRelationships = createRelationshipStates();
