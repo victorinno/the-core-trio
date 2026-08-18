@@ -171,7 +171,7 @@
 
 - [x] Remover os retratos laterais do prólogo para deixar as ilustrações narrativas integrais visíveis.
 - [x] Centralizar a narração em um painel de vidro translúcido de alta legibilidade.
-- [ ] Validar e publicar a composição revisada no GitHub Pages.
+- [x] Validar e publicar a composição revisada no GitHub Pages.
 
 ### Integração com sistemas existentes
 

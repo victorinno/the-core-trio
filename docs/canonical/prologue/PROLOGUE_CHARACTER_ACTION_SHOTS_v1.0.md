@@ -27,3 +27,5 @@ The public GitHub Pages check confirmed the same wedding frame after canvas init
 The lateral portrait layer has been removed. The narrative card now sits at the center of the screen, and its midnight-glass opacity was reduced after visual review so the wedding action remains readable behind the English text while the copy retains contrast.
 
 The revised local scene was checked after canvas initialization: the centered card reveals Alice, the player silhouette and the ring exchange through the glass, with the English copy still clearly readable.
+
+The public GitHub Pages version was also checked after canvas initialization. It shows no separate avatar card; the centered glass narration overlays, but does not conceal, the wedding illustration.
