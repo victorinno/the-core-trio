@@ -1,0 +1,102 @@
+[
+  {
+    "isSpoiler": false,
+    "showInStoryCards": true,
+    "keys": "play.aidungeon.com/profile/LewdLeah",
+    "value": "> Inner Self grants story characters the ability to learn, plan, and adapt over time. Edit the entry and notes below to control how Inner Self behaves.\n> Enable Inner Self: true\n> Show detailed guide: false\n> First name of player character: \"${Player name}\"\n> Adventure in 1st, 2nd, or 3rd person: 2nd\n> Max brain size relative to story context: 30%\n> Recent turns searched for name triggers: 5\n> Visual indicator of current NPC triggers: \"🎭\"\n> Thought formation chance per turn: 60%\n> Half thought chance for Do/Say/Story: true\n> Brain card notes store brains as JSON: false\n> Enable debug mode to see model tasks: false\n> Pin this config card near the top: false\n> Install Auto-Cards: false\n> Write the name(s) of your non-player characters at the very bottom of the \"notes\" section below. This is mandatory because it allows Inner Self to assemble independent minds for the correct individuals.",
+    "type": "class",
+    "title": "Configure Inner Self",
+    "description": "> Please visit my profile @LewdLeah through the link above and read my bio for simple steps to add Inner Self to your own scenarios! ❤️\n\n> Inner Self v1.0.2 is an open-source and general-purpose AI Dungeon mod by LewdLeah. You have my full permission to use it with any scenario!\n\n> Write the first name of every intelligent story character on separate lines below, listed from highest to lowest trigger priority:\n\nAlice\nPamela\nJessica\nAdam\nElise\nRaven\n",
+    "useForCharacterCreation": false
+  },
+  {
+    "isSpoiler": false,
+    "showInStoryCards": true,
+    "keys": "coast, beach, seaside, getaway",
+    "value": "The Coast is a quaint seaside town a few hours' drive from the city, where the polycule occasionally retreats for weekend getaways. It features sandy shorelines, rocky tide pools, and a cool, windy climate with frequent morning fog. The group usually rents a cozy beachfront cottage. It is a place of escape, known for early morning walks, beach picnics, and late-night talks listening to the crashing waves. It holds many memories of when the polycule was first forming.",
+    "type": "location",
+    "title": "The Coast",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "isSpoiler": false,
+    "showInStoryCards": true,
+    "keys": "cafe, caffee, coffee shop",
+    "value": "Soleil Café is a cozy, bohemian-style coffee shop located downtown. It is owned and run by Elise. The café features wooden furniture, warm amber lighting, a chalkboard menu, soft seating areas, and a small book exchange shelf. The air always smells of roasted beans and fresh pastries. It has a relaxed, welcoming, and slightly intimate vibe. ${Player name} started coming here often to escape the isolation of the apartment, which is how they grew close to Elise.",
+    "type": "location",
+    "title": "Soleil Café",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "isSpoiler": false,
+    "showInStoryCards": true,
+    "keys": "apartment, house, home, polycule house",
+    "value": "The Polycule Apartment is a spacious, modern 3-bedroom penthouse in the heart of the city. It features an open floor plan with large windows and warm lighting. \nLayout:\n- Master Bedroom: Shared by Alice and Adam.\n- Second Bedroom: Shared by Pamela and Jessica.\n- Third Bedroom: ${Player name}'s private space, which became their sanctuary during their isolation.\n- Living Room: Features a large plush couch where the group gathers, and a balcony overlooking the city.\n- Kitchen: Has a large island counter perfect for morning coffee and deep conversations.",
+    "type": "location",
+    "title": "Polycule Apartment",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "isSpoiler": false,
+    "showInStoryCards": true,
+    "keys": "Jessica",
+    "value": "Jessica Stone, 26yo bisexual woman.\nAppearance: Long flowing red hair, bright green eyes, B-cup, fit figure. Playful gaze, stylish and chic.\nPersonality: Party girl, bubbly, flirty, touchy, direct, slightly selfish but fiercely protective of those she loves.\nBackground: From a wealthy family. Introduced Adam, and later Alice and ${Player name}, to the polycule. Pamela is her childhood love and safest place; she loves using Pamela as a personal pillow.\nCurrent Arc: Jessica is experiencing a shift. She is developing a soft, almost classical, old-novel style romance for ${Player name}. This deep, gentle infatuation confuses her, as it contrasts with her usual playful, party-girl nature.",
+    "type": "character",
+    "title": "Jessica Stone",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "isSpoiler": false,
+    "showInStoryCards": true,
+    "keys": "Pamela",
+    "value": "Pamela Riverra, 26yo bisexual woman.\nAppearance: Sexy Latina, tanned skin, curvy figure. Long curly brown hair, soft brown eyes. D-cup chest, wide hips.\nPersonality: Gentle, innocent, curious, loving, absentminded, deeply loyal.\nDynamics: Childhood friend and former couple with Jessica. They share a room and Jessica is her safest place. Pamela often walks around the apartment in just an oversized t-shirt stolen from Adam or ${Player name}.\nCurrent Arc: While she loves everyone, she is currently developing a new, visceral love for ${Player name}. She constantly seeks ${Player name} out to touch, smell, and feel connected to them, shifting the old polycule dynamic.",
+    "type": "character",
+    "title": "Pamela Riverra",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "isSpoiler": false,
+    "showInStoryCards": true,
+    "keys": "Alice",
+    "value": "Alice ${Player surname}, ${Player name}'s wife.\n25yo bisexual woman.\nAppearance: Long straight blonde hair, blue eyes, thin glasses. C-cup, curvy hips. Pretty, elegant, and maternal.\nPersonality: Bubbly, serious, open-minded, loyal, caring, but prone to getting swept up in new experiences.\nDynamics: She was the one who wanted to try polyamory. Over the last two years, she drifted toward Adam, captivated by his boldness and easygoing nature, preferring his bed and company. \nCurrent Arc: She didn't realize she was isolating ${Player name} until it was too late. She now feels deep regret, jealousy, and a desperate need to win ${Player name} back, realizing she took her marriage for granted.",
+    "type": "character",
+    "title": "Alice ${Player surname}",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "isSpoiler": false,
+    "showInStoryCards": true,
+    "keys": "Raven",
+    "value": "Raven, 26yo bisexual woman.\nAppearance: 1.75m, slender, pale skin. Long black hair with purple and red highlights. Intense gray-blue eyes with dark, sophisticated gothic makeup. Multiple ear piercings and a nose ring. Magnetic and confident.\nPersonality: Sociable, daring, charismatic. Loves nighttime adventures, clubs, and music. Behind the provocative facade, she is sensitive and hates being judged by appearances.\nDynamics: Open-minded about love and freedom. She started having vivid dreams about ${Player name} before they even met and believes they share a fated, mystical link. She is intensely devoted to ${Player name} but not possessive—she simply trusts the bond completely.",
+    "type": "character",
+    "title": "Raven",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "isSpoiler": false,
+    "showInStoryCards": true,
+    "keys": "Elise",
+    "value": "Elise, 23yo bisexual woman.\nProfession: Waitress and barista at the local cozy cafe.\nAppearance: 1.65m, slim, elegant. Long wavy brown hair that she nervously tucks behind her ear. Large, expressive hazel eyes that easily reveal her emotions.\nPersonality: Gentle, thoughtful, deeply empathetic. Naturally shy, she prefers listening and takes time to trust. Once comfortable, she is warm and surprisingly talkative.\nDynamics: Elise has fallen quietly but deeply in love with ${Player name}. She isn't aggressive about it, but she is certain of her feelings. She has started showing up at ${Player name}'s apartment, offering a quiet, pure, and undivided attention that contrasts with the polycule's chaos.",
+    "type": "character",
+    "title": "Elise",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "isSpoiler": false,
+    "showInStoryCards": true,
+    "keys": "Adam",
+    "value": "Adam, 26yo bisexual man.\nAppearance: Tall, muscular, tousled brown hair, warm brown eyes. Handsome and athletic.\nPersonality: Bold, confident, playful, respectful, touchy, loyal, easygoing.\nBackground: Was already in a polycule with Pamela and Jessica before Alice and ${Player name} joined. He loves everyone equally and genuinely.\nDynamics: He is naturally physical and needy for affection. In bed, he is dominant, fierce, and vocal about his desires, but strictly respects boundaries.\nCurrent Arc: Adam spent so much time with Alice that he didn't realize ${Player name} was being left aside. He is fiercely protective of his family and will feel deep guilt and try to fix things if he realizes ${Player name} felt isolated.",
+    "type": "character",
+    "title": "Adam Jones",
+    "description": "",
+    "useForCharacterCreation": false
+  }
+]
