@@ -53,6 +53,12 @@ The most valuable first build is the accessibility overlay and reflection recap 
 | UX-03 — A pace that can be revised | A route-specific connection preference available after the prologue. | Mandatory romance, permanent locks or a universal relationship setting. | Friendship, exploration, intention and pause each change copy eligibility without bypassing consent gates. |
 | UX-04 — Memory as context | A route journal that surfaces recalled preferences and the last important choice. | Replacing the existing weekly routine/economy systems. | One or more memory anchors appear after every completed chapter. |
 
+## UX-01 implementation check
+
+The first visible improvement is now present on the dashboard: an **A Access** control appears in the top-right header, providing a discoverable counterpart to the keyboard shortcut. The underlying visual-novel surface and current routes remain unchanged until the overlay is opened.
+
+The panel was checked visually over the dashboard and contains session-scoped Text Size, High Contrast and Reduced Motion controls plus keyboard help. Unit tests cover the `A` command, and the Playwright navigation suite confirms that `A` opens the overlay without changing the current screen while Escape closes it.
+
 ## Guardrails
 
 The Croe Trio should preserve its own blue-glass penthouse identity, ensemble focus, adult-only cast and existing Safety/Clarity/Bond/Tension model. The reference’s soft, developmental pacing should inform **clarity of consent and choices**, not replace Croe Trio’s shared-household, polycule-specific systems. Preferences should be editable; the player should never be punished merely for choosing friendship, slowing down, or stepping back.

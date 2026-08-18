@@ -59,6 +59,7 @@ type E2eStatePatch = {
 type E2eSnapshot = {
   screen: Screen;
   prologueScene: number | null;
+  accessibility: { textScale: "standard" | "large"; highContrast: boolean; reducedMotion: boolean; panelOpen: boolean };
   activeRoute: RouteId | null;
   actionCategory: ActionCategory;
   location: LocationId;
@@ -66,6 +67,12 @@ type E2eSnapshot = {
   routes: Record<RouteId, RelationshipState>;
   beat: { title: string; choiceIds: string[] } | null;
   outcome: { title: string; line: string; detail: string } | null;
+};
+
+type AccessibilitySettings = {
+  textScale: "standard" | "large";
+  highContrast: boolean;
+  reducedMotion: boolean;
 };
 
 declare global {
@@ -112,6 +119,8 @@ export class GameWorld {
   private economy: EconomyState = createEconomyState();
   private actionCategory: ActionCategory = "work";
   private location: LocationId = "apartment";
+  private accessibility: AccessibilitySettings = this.loadAccessibility();
+  private accessibilityOpen = false;
   private narrow = window.innerWidth < 720;
   private elapsed = 0;
   private pulse: Ellipse | null = null;
@@ -185,6 +194,7 @@ export class GameWorld {
     return structuredClone({
       screen: this.activeScreen,
       prologueScene: this.activeScreen === "prologue" ? this.prologueSceneIndex : null,
+      accessibility: { ...this.accessibility, panelOpen: this.accessibilityOpen },
       activeRoute: this.activeRoute,
       actionCategory: this.actionCategory,
       location: this.location,
@@ -339,7 +349,7 @@ export class GameWorld {
 
   private update() {
     this.elapsed += this.scene.getEngine().getDeltaTime() / 1000;
-    if (this.pulse) this.pulse.alpha = 0.56 + Math.sin(this.elapsed * 1.6) * 0.24;
+    if (this.pulse) this.pulse.alpha = this.accessibility.reducedMotion ? 0.56 : 0.56 + Math.sin(this.elapsed * 1.6) * 0.24;
   }
 
   private add<T extends Control>(control: T): T {
@@ -359,8 +369,8 @@ export class GameWorld {
   private text(name: string, value: string, size: number, color = "#FAF1E9") {
     const node = new TextBlock(name, value);
     node.fontFamily = "Manrope";
-    node.fontSize = size;
-    node.color = color;
+    node.fontSize = Math.round(size * this.textScaleFactor());
+    node.color = this.accessibility.highContrast ? "#FFFFFF" : color;
     node.width = "100%";
     node.textWrapping = true;
     node.resizeToFit = false;
@@ -372,12 +382,39 @@ export class GameWorld {
     const node = new Rectangle(name);
     node.width = width;
     node.height = height;
-    node.background = "#0C1630";
-    node.alpha = 0.93;
+    node.background = this.accessibility.highContrast ? "#020713" : "#0C1630";
+    node.alpha = this.accessibility.highContrast ? 0.99 : 0.93;
     node.thickness = 1;
     node.color = `${accent}AA`;
     node.cornerRadius = this.narrow ? 22 : 28;
     return node;
+  }
+
+  private textScaleFactor() {
+    return this.accessibility.textScale === "large" ? 1.2 : 1;
+  }
+
+  private loadAccessibility(): AccessibilitySettings {
+    const fallback: AccessibilitySettings = { textScale: "standard", highContrast: false, reducedMotion: false };
+    try {
+      const stored = window.sessionStorage.getItem("croe-accessibility");
+      return stored ? { ...fallback, ...JSON.parse(stored) } : fallback;
+    } catch {
+      return fallback;
+    }
+  }
+
+  private saveAccessibility() {
+    try {
+      window.sessionStorage.setItem("croe-accessibility", JSON.stringify(this.accessibility));
+    } catch {
+      // Storage can be unavailable; controls remain active for the current runtime.
+    }
+  }
+
+  private toggleAccessibility() {
+    this.accessibilityOpen = !this.accessibilityOpen;
+    this.render();
   }
 
   private buildHeader(routeId: RouteId | null = this.activeRoute) {
@@ -417,6 +454,23 @@ export class GameWorld {
     wordmark.left = this.narrow ? "87px" : "122px";
     wordmark.width = this.narrow ? "180px" : "260px";
     bar.addControl(wordmark);
+
+    const access = Button.CreateSimpleButton("open-accessibility", "A  ACCESS");
+    access.width = this.narrow ? "82px" : "98px";
+    access.height = this.narrow ? "26px" : "30px";
+    access.color = "#E8B5C6";
+    access.fontFamily = "Manrope";
+    access.fontSize = this.narrow ? 9 : 10;
+    access.fontWeight = "700";
+    access.background = this.accessibility.highContrast ? "#B84A71" : "#162642";
+    access.cornerRadius = 10;
+    access.thickness = 1;
+    access.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    access.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+    access.left = this.narrow ? "-12px" : "-24px";
+    access.top = this.narrow ? "8px" : "10px";
+    access.onPointerClickObservable.add(() => this.toggleAccessibility());
+    bar.addControl(access);
 
     if (routeId) {
       const state = this.states[routeId];
@@ -490,15 +544,17 @@ export class GameWorld {
     button.height = height;
     button.color = "#FFF8F2";
     button.fontFamily = "Manrope";
-    button.fontSize = this.narrow ? 14 : 16;
+    button.fontSize = Math.round((this.narrow ? 14 : 16) * this.textScaleFactor());
     button.fontWeight = "700";
     button.background = color;
     button.cornerRadius = 16;
     button.thickness = 0;
     button.hoverCursor = "pointer";
     button.onPointerEnterObservable.add(() => {
-      button.scaleX = 1.015;
-      button.scaleY = 1.015;
+      if (!this.accessibility.reducedMotion) {
+        button.scaleX = 1.015;
+        button.scaleY = 1.015;
+      }
     });
     button.onPointerOutObservable.add(() => {
       button.scaleX = 1;
@@ -634,6 +690,71 @@ export class GameWorld {
     controls.height = "18px";
     controls.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
     content.addControl(controls);
+  }
+
+  private buildAccessibilityOverlay() {
+    const veil = this.add(new Rectangle("accessibility-veil"));
+    veil.width = "100%";
+    veil.height = "100%";
+    veil.background = "#020713";
+    veil.alpha = 0.74;
+    veil.thickness = 0;
+    veil.isPointerBlocker = true;
+
+    const panel = this.add(this.panel("accessibility-panel", this.narrow ? "90%" : "520px", this.narrow ? "560px" : "500px", "#92B6D9"));
+    panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+    panel.alpha = this.accessibility.highContrast ? 1 : 0.96;
+    const content = new StackPanel("accessibility-content");
+    content.width = "82%";
+    content.height = "84%";
+    content.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    content.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+    content.isVertical = true;
+    content.spacing = this.narrow ? 12 : 14;
+    panel.addControl(content);
+
+    const eyebrow = this.text("accessibility-eyebrow", "PLAY YOUR WAY", this.narrow ? 11 : 13, "#92B6D9");
+    eyebrow.fontWeight = "700";
+    eyebrow.height = "24px";
+    eyebrow.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    content.addControl(eyebrow);
+    const heading = this.text("accessibility-heading", "Accessibility", this.narrow ? 35 : 44);
+    heading.fontFamily = "DM Serif Display";
+    heading.fontWeight = "700";
+    heading.height = this.narrow ? "70px" : "78px";
+    heading.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    content.addControl(heading);
+    const note = this.text("accessibility-note", "These settings apply to this session and keep the story fully playable by keyboard.", this.narrow ? 13 : 15, "#D9E3F2");
+    note.height = this.narrow ? "62px" : "50px";
+    note.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    content.addControl(note);
+
+    const textSize = this.createButton("accessibility-text", `TEXT SIZE · ${this.accessibility.textScale === "large" ? "LARGE" : "STANDARD"}`, "100%", "48px", "#385A88", () => {
+      this.accessibility.textScale = this.accessibility.textScale === "large" ? "standard" : "large";
+      this.saveAccessibility();
+      this.render();
+    });
+    content.addControl(textSize);
+    const contrast = this.createButton("accessibility-contrast", `HIGH CONTRAST · ${this.accessibility.highContrast ? "ON" : "OFF"}`, "100%", "48px", this.accessibility.highContrast ? "#A93C63" : "#273C60", () => {
+      this.accessibility.highContrast = !this.accessibility.highContrast;
+      this.saveAccessibility();
+      this.render();
+    });
+    content.addControl(contrast);
+    const motion = this.createButton("accessibility-motion", `REDUCED MOTION · ${this.accessibility.reducedMotion ? "ON" : "OFF"}`, "100%", "48px", this.accessibility.reducedMotion ? "#285B57" : "#273C60", () => {
+      this.accessibility.reducedMotion = !this.accessibility.reducedMotion;
+      this.saveAccessibility();
+      this.render();
+    });
+    content.addControl(motion);
+    const help = this.text("accessibility-help", "KEYBOARD\nA  Accessibility  ·  Enter  Continue  ·  M  World map  ·  H  Home  ·  Q  Room  ·  R  Restart", this.narrow ? 10 : 12, "#BBC7D7");
+    help.height = this.narrow ? "72px" : "58px";
+    help.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    content.addControl(help);
+    const close = this.createButton("accessibility-close", "Close", this.narrow ? "210px" : "230px", "48px", "#A93C63", () => this.toggleAccessibility());
+    close.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    content.addControl(close);
   }
 
   private buildDashboard() {
@@ -1511,9 +1632,11 @@ export class GameWorld {
   }
 
   private handleKeydown(event: KeyboardEvent) {
+    if (this.accessibilityOpen && event.key === "Escape") return this.toggleAccessibility();
     const command = resolveKeyboardCommand(this.activeScreen, event.key);
     if (!command) return;
     if (command.type === "reset") return this.reset();
+    if (command.type === "toggle-accessibility") return this.toggleAccessibility();
     if (command.type === "open-prologue") return this.openPrologue();
     if (command.type === "advance-prologue") return this.advancePrologue();
     if (command.type === "skip-prologue") return this.skipPrologue();
@@ -1568,6 +1691,7 @@ export class GameWorld {
     if (this.activeScreen === "conversation") this.buildConversation();
     if (this.activeScreen === "reflection") this.buildReflection();
     if (this.activeScreen === "finale") this.buildFinale();
+    if (this.accessibilityOpen) this.buildAccessibilityOverlay();
   }
 
   dispose() {

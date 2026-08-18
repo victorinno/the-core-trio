@@ -191,6 +191,12 @@
 - [x] Comparar os padrões observados com a experiência atual de The Croe Trio.
 - [x] Documentar melhorias priorizadas sem replicar identidade visual, arte ou conteúdo do jogo de referência.
 
+## UX-01 — Acessibilidade visível
+
+- [x] Adicionar um painel Acessibilidade aberto por `A` e por um botão visível.
+- [x] Implementar tamanho de texto, alto contraste, movimento reduzido e ajuda de teclado na sessão.
+- [x] Validar, publicar e registrar a primeira melhoria de UX visível.
+
 ### Integração com sistemas existentes
 
 - [ ] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.

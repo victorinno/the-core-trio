@@ -38,4 +38,14 @@ test.describe("QA-01, QA-02 e QA-12 — inicialização e navegação", () => {
     await page.keyboard.press("q");
     expect((await snapshot(page)).location).toBe("player-room");
   });
+
+  test("abre o painel Access sem consumir a tela atual e o fecha por Escape", async ({ page }) => {
+    await openGame(page);
+    await page.keyboard.press("a");
+    const opened = await snapshot(page);
+    expect(opened.screen).toBe("dashboard");
+    expect(opened.accessibility.panelOpen).toBe(true);
+    await page.keyboard.press("Escape");
+    expect((await snapshot(page)).accessibility.panelOpen).toBe(false);
+  });
 });

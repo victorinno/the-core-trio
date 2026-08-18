@@ -6,6 +6,12 @@ describe("resolveKeyboardCommand", () => {
     expect(resolveKeyboardCommand("conversation", "R")).toEqual({ type: "reset" });
   });
 
+  it("KBD-11: opens accessibility from every screen without consuming route or routine commands", () => {
+    expect(resolveKeyboardCommand("title", "A")).toEqual({ type: "toggle-accessibility" });
+    expect(resolveKeyboardCommand("conversation", "a")).toEqual({ type: "toggle-accessibility" });
+    expect(resolveKeyboardCommand("actions", "A")).toEqual({ type: "toggle-accessibility" });
+  });
+
   it("KBD-02: opens the prologue from the title and allows a clean skip", () => {
     expect(resolveKeyboardCommand("title", "Enter")).toEqual({ type: "open-prologue" });
     expect(resolveKeyboardCommand("title", "S")).toEqual({ type: "open-dashboard" });

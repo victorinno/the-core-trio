@@ -2,6 +2,8 @@ import { expect, type Page } from "@playwright/test";
 
 export type GameSnapshot = {
   screen: string;
+  prologueScene: number | null;
+  accessibility: { textScale: "standard" | "large"; highContrast: boolean; reducedMotion: boolean; panelOpen: boolean };
   activeRoute: string | null;
   actionCategory: string;
   location: string;

@@ -26,6 +26,7 @@ export type KeyboardActionCategory = "work" | "care" | "social";
 
 export type KeyboardCommand =
   | { type: "reset" }
+  | { type: "toggle-accessibility" }
   | { type: "open-dashboard" }
   | { type: "open-prologue" }
   | { type: "advance-prologue" }
@@ -51,6 +52,7 @@ const dashboardReturnScreens: KeyboardScreen[] = ["actions", "store", "wallet", 
 export function resolveKeyboardCommand(screen: KeyboardScreen, key: string): KeyboardCommand | null {
   const normalized = key.toLowerCase();
   if (normalized === "r") return { type: "reset" };
+  if (normalized === "a") return { type: "toggle-accessibility" };
   if (screen === "prologue" && key === "Enter") return { type: "advance-prologue" };
   if (screen === "prologue" && normalized === "s") return { type: "skip-prologue" };
   if (screen === "prologue") return null;
