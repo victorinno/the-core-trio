@@ -102,3 +102,7 @@ A repetição manual foi levada até a Etapa 3 com a primeira redução de Tens�
 | Epílogo Rotina a dois | Aprovado visualmente | Cena final exibiu V5 · C5 · S5 · T1, quatro memórias e retorno ao mapa. |
 
 As capturas em lote de Ações e do epílogo ainda podem mostrar apenas o fundo azul durante a primeira composição WebGL. Essa limitação não bloqueou a onda: as mesmas telas foram observadas de forma interativa depois da estabilização do canvas. O baseline de bundle permanece o ponto de comparação para a próxima onda de code-splitting.
+
+## Publicação
+
+A execução inicial do Pages foi cancelada por uma implantação substituta disparada pelo commit do bundle. A execução substituta do commit `5d7ee55` foi concluída com sucesso. A URL pública `https://victorinno.github.io/the-core-trio/?demo=week` respondeu novamente com o título **The Croe Trio — Date Sim**; o navegador conectado não disponibilizou a captura do canvas externo nesta verificação, mas o carregamento do documento público foi confirmado.
