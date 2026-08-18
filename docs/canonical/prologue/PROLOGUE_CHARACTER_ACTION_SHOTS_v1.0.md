@@ -18,6 +18,12 @@ Scene 3 now places Pamela beside the player in the foreground and Alice with Ada
 
 Scene 5 visibly places Pamela, the player and Jessica together around the couch and three mugs, making the Room for one more trio unambiguous.
 
+The published sequence was reopened after the correction and begins normally at Scene 1 with the centered text treatment intact.
+
+The public Scene 3 check confirmed Pamela beside the player in the foreground, with Alice and Adam together in the bedroom background.
+
+The public Scene 4 check confirmed that Pamela is the only partner in the coffee moment. The public Scene 5 check confirmed Pamela, the player and Jessica together in the Room for one more composition.
+
 The runtime maps these moments directly to `prologue01` through `prologue07`; the individual action frames replace the prior environment-only variants.
 
 ## Visual spot check

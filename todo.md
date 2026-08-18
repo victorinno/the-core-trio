@@ -178,7 +178,7 @@
 - [x] Cena 3: mostrar Alice com Adam, enquanto Pamela se senta ao lado do jogador.
 - [x] Cena 4: mostrar Pamela no momento do tempo não reivindicado com o jogador.
 - [x] Cena 5: mostrar Pamela, jogador e Jessica em Room for one more.
-- [x] Regenerar e validar as três cenas corrigidas; a publicação será atualizada com o pacote revisado.
+- [x] Regenerar, validar e publicar as três cenas corrigidas.
 
 ### Integração com sistemas existentes
 
