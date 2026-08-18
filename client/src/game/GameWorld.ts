@@ -33,6 +33,7 @@ import {
 } from "./economy";
 import { LOCATIONS, travelBlocks, type LocationId } from "./locations";
 import { resolveKeyboardCommand, type KeyboardActionCategory, type KeyboardScreen } from "./keyboardNavigation";
+import { PROLOGUE_SCENES } from "./prologue";
 import {
   applyEffect,
   createRelationshipStates,
@@ -57,6 +58,7 @@ type E2eStatePatch = {
 
 type E2eSnapshot = {
   screen: Screen;
+  prologueScene: number | null;
   activeRoute: RouteId | null;
   actionCategory: ActionCategory;
   location: LocationId;
@@ -105,6 +107,7 @@ export class GameWorld {
   private activeScreen: Screen = "title";
   private activeRoute: RouteId | null = null;
   private activeChoice: StoryChoice | null = null;
+  private prologueSceneIndex = 0;
   private states = createRelationshipStates();
   private economy: EconomyState = createEconomyState();
   private actionCategory: ActionCategory = "work";
@@ -126,7 +129,9 @@ export class GameWorld {
     window.addEventListener("resize", this.onWindowResize);
     scene.onBeforeRenderObservable.add(() => this.update());
 
-    if (this.demoMode === "week") {
+    if (this.demoMode === "prologue") {
+      this.activeScreen = "prologue";
+    } else if (this.demoMode === "week") {
       this.activeScreen = "dashboard";
     } else if (this.demoMode === "world") {
       this.activeScreen = "world-map";
@@ -179,6 +184,7 @@ export class GameWorld {
     const beat = route && state && !state.complete ? this.resolveBeat(route, state) : null;
     return structuredClone({
       screen: this.activeScreen,
+      prologueScene: this.activeScreen === "prologue" ? this.prologueSceneIndex : null,
       activeRoute: this.activeRoute,
       actionCategory: this.actionCategory,
       location: this.location,
@@ -232,7 +238,7 @@ export class GameWorld {
         const choice = this.resolveBeat(route, this.states[this.activeRoute]).choices[index];
         if (choice) this.choose(choice);
       },
-      advance: () => this.advance(),
+      advance: () => (this.activeScreen === "prologue" ? this.advancePrologue() : this.advance()),
     };
   }
 
@@ -428,7 +434,7 @@ export class GameWorld {
       bar.addControl(metrics);
     }
 
-    if (this.activeScreen !== "title") {
+    if (this.activeScreen !== "title" && this.activeScreen !== "prologue") {
       const nav = new StackPanel("persistent-place-nav");
       nav.width = this.narrow ? "250px" : "290px";
       nav.height = "38px";
@@ -516,7 +522,7 @@ export class GameWorld {
     copy.isVertical = true;
     copy.spacing = this.narrow ? 14 : 18;
 
-    const eyebrow = this.text("title-eyebrow", "ROMANCE INTERATIVO · MEMÓRIAS E ESCOLHAS", this.narrow ? 12 : 15, "#E8B5C6");
+    const eyebrow = this.text("title-eyebrow", "INTERACTIVE ROMANCE · MEMORY AND CHOICE", this.narrow ? 12 : 15, "#E8B5C6");
     eyebrow.fontWeight = "700";
     eyebrow.height = "30px";
     copy.addControl(eyebrow);
@@ -533,7 +539,7 @@ export class GameWorld {
     rule.thickness = 0;
     rule.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     copy.addControl(rule);
-    const subtitle = this.text("title-subtitle", "Uma escolha deixa memória. Uma memória muda a próxima conversa.", this.narrow ? 18 : 20, "#EFE0D8");
+    const subtitle = this.text("title-subtitle", "A choice leaves a memory. A memory changes the next conversation.", this.narrow ? 18 : 20, "#EFE0D8");
     subtitle.height = this.narrow ? "92px" : "118px";
     subtitle.lineSpacing = "5px";
     copy.addControl(subtitle);
@@ -547,7 +553,7 @@ export class GameWorld {
     intentRail.thickness = 1;
     intentRail.cornerRadius = 12;
     intentRail.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
-    const intentCopy = this.text("intent-copy", "VÍNCULO · CLAREZA · SEGURANÇA · TENSÃO", this.narrow ? 9 : 11, "#E8B5C6");
+    const intentCopy = this.text("intent-copy", "BOND · CLARITY · SAFETY · TENSION", this.narrow ? 9 : 11, "#E8B5C6");
     intentCopy.fontWeight = "700";
     intentCopy.width = "92%";
     intentCopy.height = "80%";
@@ -557,12 +563,73 @@ export class GameWorld {
     intentRail.addControl(intentCopy);
     copy.addControl(intentRail);
 
-    const start = this.createButton("start", "Começar a semana", this.narrow ? "270px" : "310px", this.narrow ? "58px" : "64px", "#A93C63", () => this.openDashboard());
+    const start = this.createButton("start", "Begin the story", this.narrow ? "270px" : "310px", this.narrow ? "58px" : "64px", "#A93C63", () => this.openPrologue());
     start.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     copy.addControl(start);
-    const hint = this.text("title-hint", "Enter para começar · R para recomeçar", this.narrow ? 12 : 14, "#B8C2D4");
+    const hint = this.text("title-hint", "Enter to begin · S to skip to Week One · R to restart", this.narrow ? 12 : 14, "#B8C2D4");
     hint.height = "26px";
     copy.addControl(hint);
+  }
+
+  private buildPrologue() {
+    const scene = PROLOGUE_SCENES[this.prologueSceneIndex];
+    const background = this.add(new Image(`prologue-background-${this.prologueSceneIndex}`, ASSETS[scene.background]));
+    background.width = "100%";
+    background.height = "100%";
+    background.stretch = Image.STRETCH_FILL;
+    background.isPointerBlocker = false;
+
+    const shade = this.add(new Rectangle("prologue-shade"));
+    shade.width = "100%";
+    shade.height = "100%";
+    shade.background = "#050B1D";
+    shade.alpha = 0.56;
+    shade.thickness = 0;
+    shade.isPointerBlocker = false;
+    this.buildHeader(null);
+    this.addPortraits(scene.portraits, this.narrow ? 0.42 : 0.66);
+
+    const panel = this.add(this.panel("prologue-copy", this.narrow ? "88%" : "46%", this.narrow ? "450px" : "430px", "#B84A71"));
+    panel.horizontalAlignment = scene.alignment === "left" ? Control.HORIZONTAL_ALIGNMENT_LEFT : Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+    panel.left = scene.alignment === "left" ? (this.narrow ? "6%" : "7%") : (this.narrow ? "-6%" : "-7%");
+    panel.top = this.narrow ? "-42px" : "-56px";
+
+    const content = new StackPanel("prologue-content");
+    content.width = "84%";
+    content.height = "84%";
+    content.isVertical = true;
+    content.spacing = this.narrow ? 13 : 16;
+    content.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    content.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+    panel.addControl(content);
+    const count = this.text("prologue-count", `${this.prologueSceneIndex + 1} / ${PROLOGUE_SCENES.length}  ·  ${scene.chapter}`, this.narrow ? 10 : 12, "#E8B5C6");
+    count.fontWeight = "700";
+    count.height = "26px";
+    content.addControl(count);
+    const title = this.text("prologue-title", scene.title, this.narrow ? 34 : 48, "#FFF8F2");
+    title.fontFamily = "DM Serif Display";
+    title.fontWeight = "700";
+    title.height = this.narrow ? "72px" : "82px";
+    content.addControl(title);
+    const divider = new Rectangle("prologue-divider");
+    divider.width = "90px";
+    divider.height = "3px";
+    divider.background = "#B84A71";
+    divider.thickness = 0;
+    divider.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+    content.addControl(divider);
+    const copy = this.text("prologue-copy-text", scene.copy, this.narrow ? 17 : 20, "#F4E8E0");
+    copy.height = this.narrow ? "162px" : "145px";
+    copy.lineSpacing = "5px";
+    content.addControl(copy);
+    const actionLabel = this.prologueSceneIndex === PROLOGUE_SCENES.length - 1 ? "Step into Week One" : "Continue";
+    const action = this.createButton("prologue-advance", actionLabel, this.narrow ? "230px" : "250px", this.narrow ? "52px" : "56px", "#A93C63", () => this.advancePrologue());
+    action.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+    content.addControl(action);
+    const controls = this.text("prologue-controls", "ENTER TO CONTINUE  ·  S TO SKIP  ·  R TO RESTART", this.narrow ? 9 : 10, "#BBC7D7");
+    controls.height = "18px";
+    content.addControl(controls);
   }
 
   private buildDashboard() {
@@ -1409,12 +1476,32 @@ export class GameWorld {
     this.render();
   }
 
+  private openPrologue() {
+    this.prologueSceneIndex = 0;
+    this.activeScreen = "prologue";
+    this.render();
+  }
+
+  private advancePrologue() {
+    if (this.prologueSceneIndex < PROLOGUE_SCENES.length - 1) {
+      this.prologueSceneIndex += 1;
+      this.render();
+      return;
+    }
+    this.openDashboard();
+  }
+
+  private skipPrologue() {
+    this.openDashboard();
+  }
+
   private reset() {
     this.states = createRelationshipStates();
     this.economy = createEconomyState();
     this.location = "apartment";
     this.activeRoute = null;
     this.activeChoice = null;
+    this.prologueSceneIndex = 0;
     this.activeScreen = "title";
     this.render();
   }
@@ -1423,6 +1510,9 @@ export class GameWorld {
     const command = resolveKeyboardCommand(this.activeScreen, event.key);
     if (!command) return;
     if (command.type === "reset") return this.reset();
+    if (command.type === "open-prologue") return this.openPrologue();
+    if (command.type === "advance-prologue") return this.advancePrologue();
+    if (command.type === "skip-prologue") return this.skipPrologue();
     if (command.type === "open-dashboard" || command.type === "return-dashboard") return this.openDashboard();
     if (command.type === "open-world-map") return this.openWorldMap();
     if (command.type === "return-home") return this.returnToApartment();
@@ -1460,6 +1550,7 @@ export class GameWorld {
   private render() {
     this.clearDynamic();
     if (this.activeScreen === "title") this.buildTitle();
+    if (this.activeScreen === "prologue") this.buildPrologue();
     if (this.activeScreen === "dashboard") this.buildDashboard();
     if (this.activeScreen === "actions") this.buildActions();
     if (this.activeScreen === "store") this.buildStore();

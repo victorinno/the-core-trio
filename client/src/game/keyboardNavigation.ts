@@ -7,6 +7,7 @@ import type { RouteId } from "./story";
 
 export type KeyboardScreen =
   | "title"
+  | "prologue"
   | "dashboard"
   | "actions"
   | "store"
@@ -26,6 +27,9 @@ export type KeyboardActionCategory = "work" | "care" | "social";
 export type KeyboardCommand =
   | { type: "reset" }
   | { type: "open-dashboard" }
+  | { type: "open-prologue" }
+  | { type: "advance-prologue" }
+  | { type: "skip-prologue" }
   | { type: "open-world-map" }
   | { type: "return-home" }
   | { type: "return-room" }
@@ -47,11 +51,15 @@ const dashboardReturnScreens: KeyboardScreen[] = ["actions", "store", "wallet", 
 export function resolveKeyboardCommand(screen: KeyboardScreen, key: string): KeyboardCommand | null {
   const normalized = key.toLowerCase();
   if (normalized === "r") return { type: "reset" };
+  if (screen === "prologue" && key === "Enter") return { type: "advance-prologue" };
+  if (screen === "prologue" && normalized === "s") return { type: "skip-prologue" };
+  if (screen === "prologue") return null;
   if (normalized === "m") return { type: "open-world-map" };
   if (normalized === "h") return { type: "return-home" };
   if (normalized === "q") return { type: "return-room" };
 
-  if (screen === "title" && key === "Enter") return { type: "open-dashboard" };
+  if (screen === "title" && key === "Enter") return { type: "open-prologue" };
+  if (screen === "title" && normalized === "s") return { type: "open-dashboard" };
 
   if (screen === "world-map" && /^[1-8]$/.test(key)) {
     return { type: "travel", destination: destinations[Number(key) - 1] };

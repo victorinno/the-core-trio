@@ -21,8 +21,11 @@ const assetPath = (storedPath: string, filename: string) => {
   return storedPath;
 };
 
-export const ASSETS: Record<PortraitKey | "penthouse", string> = {
+export const ASSETS: Record<PortraitKey | "penthouse" | "prologueDinner" | "prologueHallway" | "prologueDoorway", string> = {
   penthouse: assetPath("/manus-storage/croe-trio-penthouse-dawn_1f6b31e7.png", "croe-trio-penthouse-dawn.png"),
+  prologueDinner: assetPath("/manus-storage/croe-prologue-dinner-window_129d0769.png", "croe-prologue-dinner-window.png"),
+  prologueHallway: assetPath("/manus-storage/croe-prologue-hallway-distance_990cd7a8.png", "croe-prologue-hallway-distance.png"),
+  prologueDoorway: assetPath("/manus-storage/croe-prologue-doorway-dawn_bc47ead7.png", "croe-prologue-doorway-dawn.png"),
   pamela: assetPath("/manus-storage/pamela_1k_60ff582e.png", "pamela_1k.png"),
   jessica: assetPath("/manus-storage/jessica_1k_01342195.png", "jessica_1k.png"),
   alice: assetPath("/manus-storage/alice_1k_535c4339.png", "alice_1k.png"),

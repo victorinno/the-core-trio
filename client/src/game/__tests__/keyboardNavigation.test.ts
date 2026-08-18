@@ -6,9 +6,16 @@ describe("resolveKeyboardCommand", () => {
     expect(resolveKeyboardCommand("conversation", "R")).toEqual({ type: "reset" });
   });
 
-  it("KBD-02: opens the week from the title only", () => {
-    expect(resolveKeyboardCommand("title", "Enter")).toEqual({ type: "open-dashboard" });
+  it("KBD-02: opens the prologue from the title and allows a clean skip", () => {
+    expect(resolveKeyboardCommand("title", "Enter")).toEqual({ type: "open-prologue" });
+    expect(resolveKeyboardCommand("title", "S")).toEqual({ type: "open-dashboard" });
     expect(resolveKeyboardCommand("dashboard", "Enter")).toBeNull();
+  });
+
+  it("KBD-10: advances or skips the prologue without competing global navigation", () => {
+    expect(resolveKeyboardCommand("prologue", "Enter")).toEqual({ type: "advance-prologue" });
+    expect(resolveKeyboardCommand("prologue", "S")).toEqual({ type: "skip-prologue" });
+    expect(resolveKeyboardCommand("prologue", "m")).toBeNull();
   });
 
   it("KBD-03 and KBD-04: resolves one dashboard destination per key", () => {

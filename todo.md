@@ -143,6 +143,16 @@
 - [x] Corrigir a causa no bundle ou nos caminhos de publicação: base padrão corrigida de `the-croe-trio` para `the-core-trio` e imagens direcionadas a `game-assets/` no bundle externo.
 - [x] Publicar, retestar o endereço público e registrar a recuperação; assets, canvas e tela inicial foram confirmados no GitHub Pages.
 
+## Abertura cinematográfica em inglês
+
+- [x] Adaptar a introdução anexada para cenas de prólogo, mantendo tensão, autonomia e consentimento explícito.
+- [x] Preparar imagens específicas e referências visuais para cada momento da abertura.
+- [x] Gerar fundos com referência direta às artes existentes para preservar a coerência de personagens e estilo.
+- [x] Garantir que cada cena seja uma imagem estática com texto e avanço manual, sem vídeo ou reprodução automática.
+- [x] Implementar controles de avançar, pular e reiniciar o prólogo antes da Semana 1.
+- [x] Manter em inglês todos os textos visíveis do novo prólogo, seus controles e sua transição para a Semana 1.
+- [x] Validar a abertura no canvas, publicar e sincronizar o novo fluxo de início: testes, build, pacote de assets e revisão visual do Chromium aprovados.
+
 ### Integração com sistemas existentes
 
 - [ ] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.
