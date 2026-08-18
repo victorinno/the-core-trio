@@ -3,17 +3,21 @@
  * All market values are fictional game values; the Crescent Market is not financial advice or real market data.
  */
 import { applyEffect, type RelationshipState } from "./relationship";
-import type { RouteId } from "./story";
+import { meetsRouteRequirement, type RouteId, type RouteRequirement } from "./story";
 
 export type TimeSlot = "Manhã" | "Tarde" | "Noite";
 export type InvestmentProfile = "reserve" | "neighborhood" | "violet";
-export type ItemId = "ingredients" | "book" | "plant" | "vinyl" | "dessert";
+export type ItemId = "ingredients" | "book" | "plant" | "vinyl" | "dessert" | "tea" | "jessica-memento";
 export type ActivityId =
   | "rest"
   | "sleep"
   | "shift"
   | "remote"
   | "cook-trio"
+  | "tea-pamela"
+  | "find-pamela-clip"
+  | "gift-jessica"
+  | "date-pamela-lowcost"
   | "tidy-alice"
   | "help-elise"
   | "date-raven"
@@ -67,6 +71,8 @@ export interface Activity {
   effect?: { bond?: number; clarity?: number; safety?: number; tension?: number; memory: string };
   gated?: boolean;
   nightOnly?: boolean;
+  minChapter?: number;
+  routeRequirement?: RouteRequirement;
 }
 
 export const STORE_ITEMS: StoreItem[] = [
@@ -75,6 +81,8 @@ export const STORE_ITEMS: StoreItem[] = [
   { id: "plant", name: "Planta de janela", cost: 18, description: "Um gesto pequeno para Saskia, pensado para uma visita combinada." },
   { id: "vinyl", name: "Disco de vinil", cost: 28, description: "Um convite para Raven escolher a música e o ritmo da noite." },
   { id: "dessert", name: "Sobremesa para partilhar", cost: 16, description: "Um gesto coletivo para Pamela e Jessica, sem transformar cuidado em obrigação." },
+  { id: "tea", name: "Chá aromático", cost: 8, description: "Uma opção de bebida para Pamela escolher pelo aroma, temperatura ou memória." },
+  { id: "jessica-memento", name: "Lembrança simples para Jessica", cost: 12, description: "Só ganha sentido se Pamela quiser tornar o carinho por Jessica visível na conversa." },
 ];
 
 export const ACTIVITIES: Activity[] = [
@@ -82,7 +90,11 @@ export const ACTIVITIES: Activity[] = [
   { id: "sleep", name: "Dormir até amanhã", kind: "Rotina", description: "Encerrar a noite, recuperar energia e ver o que a agenda de amanhã oferece.", energy: 0, nightOnly: true },
   { id: "shift", name: "Fazer turno de trabalho", kind: "Trabalho", description: "Turno inteiro. Dá folga financeira, mas consome energia e um bloco do dia.", energy: 2, income: 60 },
   { id: "remote", name: "Aceitar trabalho remoto", kind: "Trabalho", description: "Rendimento menor e mais espaço para uma conversa no fim do dia.", energy: 1, income: 35 },
-  { id: "cook-trio", name: "Cozinhar para Pamela & Jessica", kind: "Cuidado", description: "Uma refeição simples para deixar a manhã menos pesada.", energy: 1, requires: "ingredients", route: "trio", effect: { bond: 1, safety: 1, tension: -1, memory: "Preparaste uma refeição para tornar a manhã menos pesada." } },
+  { id: "tea-pamela", name: "Preparar bebida escolhida por Pamela", kind: "Cuidado", description: "Perguntar pelo aroma, temperatura ou lembrança antes de preparar a bebida.", energy: 1, route: "trio", minChapter: 1, effect: { bond: 1, safety: 1, memory: "Você seguiu a curiosidade de Pamela em vez de escolher por ela." } },
+  { id: "find-pamela-clip", name: "Procurar o objeto esquecido com Pamela", kind: "Cuidado", description: "Acompanhar a busca sem tratar a distração dela como defeito.", energy: 1, route: "trio", minChapter: 1, effect: { bond: 1, clarity: 1, memory: "Você ajudou Pamela sem transformar distração em defeito." } },
+  { id: "cook-trio", name: "Cozinhar receita escolhida com Pamela", kind: "Cuidado", description: "Preparar uma receita pelos sabores que Pamela escolher, sem usar comida como compensação.", energy: 1, requires: "ingredients", route: "trio", minChapter: 1, routeRequirement: { minimum: { safety: 3 } }, effect: { bond: 1, safety: 1, memory: "Vocês fizeram comida para descobrir um sabor, não para apagar um conflito." } },
+  { id: "gift-jessica", name: "Acompanhar a lembrança para Jessica", kind: "Presente", description: "Deixar Pamela decidir se quer incluir Jessica e como quer tornar esse cuidado visível.", energy: 1, requires: "jessica-memento", route: "trio", minChapter: 2, routeRequirement: { minimum: { clarity: 2 } }, effect: { clarity: 1, tension: -1, memory: "Você reconheceu que o carinho de Pamela por Jessica continua sendo parte da sua vida." } },
+  { id: "date-pamela-lowcost", name: "Date de curiosidade com Pamela", kind: "Date", description: "Uma saída simples ou um chá no penthouse, com Pamela escolhendo o ritmo e a hora de voltar.", energy: 1, cost: 8, route: "trio", minChapter: 3, routeRequirement: { minimum: { safety: 3 }, maximum: { tension: 3 } }, effect: { bond: 1, clarity: 1, memory: "Vocês escolheram uma noite sem pedir que ela provasse nada." } },
   { id: "tidy-alice", name: "Arrumar o escritório de Alice & Adam", kind: "Cuidado", description: "Organizar o espaço antes da conversa, sem falar por ninguém.", energy: 1, route: "alice", effect: { safety: 1, tension: -1, memory: "Tornaste o espaço de trabalho respirável antes da conversa." } },
   { id: "help-elise", name: "Ajudar Elise a fechar o café", kind: "Cuidado", description: "Ficar até o fim do turno sem transformar ajuda numa promessa.", energy: 1, route: "elise", effect: { bond: 1, clarity: 1, memory: "Ficaste até fechar, sem transformar ajuda em promessa." } },
   { id: "date-raven", name: "Marcar uma noite calma com Raven", kind: "Date", description: "Uma saída com hora de fim e forma clara de voltar para casa.", energy: 1, cost: 28, route: "raven", gated: true, effect: { bond: 1, safety: 1, clarity: 1, memory: "Definiste uma saída e uma forma clara de voltar." } },
@@ -90,7 +102,7 @@ export const ACTIVITIES: Activity[] = [
   { id: "gift-elise", name: "Oferecer o livro a Elise", kind: "Presente", description: "Entregar o livro depois de perguntar se ela quer conversar.", energy: 1, requires: "book", route: "elise", effect: { clarity: 1, safety: 1, memory: "Ofereceste um livro e perguntaste se Elise queria recebê-lo." } },
   { id: "gift-raven", name: "Oferecer o disco a Raven", kind: "Presente", description: "Deixar Raven escolher a faixa e o volume da noite.", energy: 1, requires: "vinyl", route: "raven", effect: { bond: 1, safety: 1, memory: "Ofereceste o disco e deixaste Raven escolher a música." } },
   { id: "gift-saskia", name: "Levar a planta a Saskia", kind: "Presente", description: "Perguntar primeiro se há espaço para ela junto à janela.", energy: 1, requires: "plant", route: "saskia", effect: { bond: 1, safety: 1, memory: "Perguntaste onde a planta caberia antes de a oferecer." } },
-  { id: "date-trio", name: "Partilhar sobremesa com o Croe Trio", kind: "Date", description: "Uma noite de sobremesa e conversa, sem decidir o formato de ninguém.", energy: 1, requires: "dessert", route: "trio", gated: true, effect: { bond: 1, clarity: 1, memory: "Partilhaste sobremesa sem transformar a noite em exigência." } },
+  { id: "date-trio", name: "Partilhar sobremesa com Pamela & Jessica", kind: "Date", description: "Uma noite coletiva de sobremesa e conversa, sem decidir o formato de ninguém.", energy: 1, requires: "dessert", route: "trio", minChapter: 2, gated: true, effect: { bond: 1, clarity: 1, memory: "Partilhaste sobremesa sem transformar a noite em exigência." } },
 ];
 
 export const PROFILE_DETAILS: Record<InvestmentProfile, { name: string; risk: string; note: string }> = {
@@ -225,6 +237,8 @@ export function performActivity(state: EconomyState, relationships: Record<Route
   if (state.energy < activity.energy) return error(state, "Energia insuficiente", "Encerrar o dia repõe energia; também podes escolher uma ação sem custo de energia.");
   if ((activity.cost ?? 0) > state.personal) return error(state, "Saldo pessoal insuficiente", "Esta ação pode esperar. Trabalho e cuidado de baixo custo continuam disponíveis.");
   if (activity.requires && !state.inventory.includes(activity.requires)) return error(state, "Falta um item", "Visita a loja primeiro ou escolhe uma ação de cuidado sem compra.");
+  if (activity.route && activity.minChapter !== undefined && relationships[activity.route].chapter < activity.minChapter) return error(state, "Este gesto ainda pede mais contexto", "Continua a conversa com Pamela primeiro; uma ação só cria significado depois de existir um pedido ou uma escolha partilhada.");
+  if (activity.route && !meetsRouteRequirement(relationships[activity.route].metrics, activity.routeRequirement)) return error(state, "Ainda não é a hora deste gesto", "Pamela precisa de mais clareza, segurança ou menos tensão antes de transformar esta possibilidade numa cena.");
   if (activity.gated && activity.route && relationships[activity.route].metrics.safety < 3) return error(state, "Ainda não é hora de um date", "Antes de marcar, cria mais segurança com uma conversa, favor ou gesto de cuidado.");
 
   const base = copyState(state);

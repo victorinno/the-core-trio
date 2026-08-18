@@ -15,6 +15,7 @@ export interface RelationshipMetrics {
 export interface RelationshipState {
   chapter: number;
   complete: boolean;
+  needsRoutine: boolean;
   metrics: RelationshipMetrics;
   memories: string[];
 }
@@ -37,6 +38,7 @@ export function createRelationshipStates(): Record<RouteId, RelationshipState> {
   const makeState = (id: RouteId): RelationshipState => ({
     chapter: 0,
     complete: false,
+    needsRoutine: false,
     metrics: { ...INITIAL_STATES[id] },
     memories: [],
   });

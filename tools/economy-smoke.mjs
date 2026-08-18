@@ -9,15 +9,22 @@ import {
   travel,
   withdraw,
 } from "../client/src/game/economy.ts";
-import { createRelationshipStates } from "../client/src/game/relationship.ts";
+import { applyEffect, createRelationshipStates } from "../client/src/game/relationship.ts";
+import { meetsRouteRequirement, ROUTES } from "../client/src/game/story.ts";
 
 let economy = createEconomyState();
 let relationships = createRelationshipStates();
+relationships.trio.chapter = 1;
 
 assert.equal(economy.personal, 120, "A carteira pessoal deve começar com §120.");
 assert.equal(economy.family, 180, "O fundo da família deve começar com §180.");
 
-let result = buyItem(economy, "ingredients");
+let result = performActivity(economy, relationships, "tea-pamela");
+economy = result.economy;
+relationships = result.relationships;
+assert.equal(relationships.trio.metrics.safety, 3, "Uma bebida escolhida por Pamela deve aumentar segurança.");
+
+result = buyItem(economy, "ingredients");
 economy = result.economy;
 assert.equal(economy.personal, 108, "Comprar ingredientes deve reduzir §12 da carteira pessoal.");
 assert.ok(economy.inventory.includes("ingredients"), "Ingredientes devem entrar no inventário.");
@@ -25,10 +32,10 @@ assert.ok(economy.inventory.includes("ingredients"), "Ingredientes devem entrar 
 result = performActivity(economy, relationships, "cook-trio");
 economy = result.economy;
 relationships = result.relationships;
-assert.equal(economy.energy, 3, "Cozinhar deve consumir uma unidade de energia.");
-assert.equal(relationships.trio.metrics.bond, 3, "Cozinhar deve aumentar vínculo do Croe Trio.");
-assert.equal(relationships.trio.metrics.safety, 3, "Cozinhar deve aumentar segurança do Croe Trio.");
-assert.equal(relationships.trio.metrics.tension, 2, "Cozinhar deve reduzir tensão do Croe Trio.");
+assert.equal(economy.energy, 2, "A bebida e a receita de Pamela devem consumir duas unidades de energia ao todo.");
+assert.equal(relationships.trio.metrics.bond, 4, "Cozinhar deve aumentar vínculo com Pamela.");
+assert.equal(relationships.trio.metrics.safety, 4, "Cozinhar deve aumentar segurança com Pamela.");
+assert.equal(relationships.trio.metrics.tension, 3, "Cozinhar não deve apagar uma tensão que ainda pede conversa.");
 
 result = performActivity(economy, relationships, "shift");
 economy = result.economy;
@@ -89,5 +96,30 @@ const nextWeek = performActivity(weeklyState, createRelationshipStates(), "sleep
 assert.equal(nextWeek.day, 8, "O sono da noite de domingo deve iniciar a próxima semana.");
 assert.equal(nextWeek.investedThisWeek, 0, "O fechamento semanal deve liberar um novo limite de investimento.");
 assert.ok(nextWeek.weeklyNotice, "O início da semana deve emitir um aviso de fechamento do Crescent Market.");
+
+let pamelaEconomy = createEconomyState();
+let pamelaRelationships = createRelationshipStates();
+assert.equal(performActivity(pamelaEconomy, pamelaRelationships, "date-pamela-lowcost").economy.lastUpdate.title, "Este gesto ainda pede mais contexto", "O date de Pamela deve ficar bloqueado antes da conversa e do contexto necessário.");
+pamelaRelationships.trio = applyEffect(pamelaRelationships.trio, ROUTES.trio.beats[0].choices[0].effect);
+pamelaRelationships.trio.chapter = 1;
+result = performActivity(pamelaEconomy, pamelaRelationships, "tea-pamela");
+pamelaEconomy = result.economy;
+pamelaRelationships = result.relationships;
+assert.equal(pamelaRelationships.trio.metrics.clarity, 3, "A primeira conversa de Pamela deve abrir Clareza suficiente para a rota.");
+assert.equal(pamelaRelationships.trio.metrics.safety, 3, "O cuidado contextual deve abrir a base de Segurança para a rota.");
+pamelaRelationships.trio.chapter = 2;
+pamelaRelationships.trio = applyEffect(pamelaRelationships.trio, ROUTES.trio.beats[2].choices[1].effect);
+pamelaRelationships.trio.chapter = 3;
+result = performActivity(pamelaEconomy, pamelaRelationships, "date-pamela-lowcost");
+pamelaEconomy = result.economy;
+pamelaRelationships = result.relationships;
+assert.equal(pamelaRelationships.trio.metrics.bond, 4, "O date de curiosidade deve aumentar Vínculo quando há segurança e contexto.");
+assert.equal(pamelaRelationships.trio.metrics.clarity, 4, "O date de curiosidade deve aumentar Clareza quando há segurança e contexto.");
+pamelaRelationships.trio.chapter = 4;
+pamelaRelationships.trio = applyEffect(pamelaRelationships.trio, ROUTES.trio.beats[4].choices[0].effect);
+assert.equal(ROUTES.trio.outcome(pamelaRelationships.trio.metrics).title, "Rotina a dois", "O percurso de transparência e check-in deve alcançar o epílogo de Rotina a dois.");
+assert.equal(ROUTES.trio.outcome({ bond: 2, clarity: 1, safety: 2, tension: 4 }).title, "Pausa que preserva", "Tensão alta deve abrir um epílogo de pausa, não fechar a rota como falha.");
+assert.equal(ROUTES.trio.outcome({ bond: 2, clarity: 2, safety: 3, tension: 2 }).title, "Amizade íntima e honesta", "Segurança suficiente com vínculo ou clareza ainda baixos deve preservar uma amizade íntima válida.");
+assert.equal(meetsRouteRequirement({ bond: 2, clarity: 1, safety: 2, tension: 4 }, ROUTES.trio.beats[2].variants[0].requirement), false, "A conversa principal sobre Jessica deve converter-se em reparação quando faltam clareza e segurança.");
 
 console.log("Economy smoke test: OK");

@@ -39,9 +39,9 @@ import {
   type RelationshipMetric,
   type RelationshipState,
 } from "./relationship";
-import { OPENING_LINE, ROUTES, type Intention, type RouteId, type StoryChoice } from "./story";
+import { meetsRouteRequirement, OPENING_LINE, ROUTES, type ConversationBeat, type Intention, type NarrativeRoute, type RouteId, type StoryChoice } from "./story";
 
-type Screen = "title" | "dashboard" | "actions" | "store" | "wallet" | "market" | "economy-feedback" | "world-map" | "location" | "map" | "conversation" | "reflection" | "finale";
+type Screen = "title" | "dashboard" | "actions" | "store" | "wallet" | "market" | "economy-feedback" | "world-map" | "location" | "map" | "route-interlude" | "conversation" | "reflection" | "finale";
 type ActionCategory = "work" | "care" | "social";
 
 const INTENTION_COLORS: Record<Intention, string> = {
@@ -101,6 +101,28 @@ export class GameWorld {
       this.activeScreen = "wallet";
     } else if (this.demoMode === "market") {
       this.activeScreen = "market";
+    } else if (this.demoMode === "pamela") {
+      this.activeRoute = "trio";
+      this.activeScreen = "conversation";
+    } else if (this.demoMode === "pamela-date") {
+      this.activeRoute = "trio";
+      this.states.trio = {
+        ...this.states.trio,
+        chapter: 3,
+        metrics: { bond: 3, clarity: 3, safety: 4, tension: 2 },
+        memories: ["Você devolveu a Pamela a escolha de como contar a própria história.", "Você deixou o tempo de Pamela existir sem punição."],
+      };
+      this.activeScreen = "conversation";
+    } else if (this.demoMode === "pamela-finale") {
+      this.activeRoute = "trio";
+      this.states.trio = {
+        ...this.states.trio,
+        chapter: 4,
+        complete: true,
+        metrics: { bond: 5, clarity: 5, safety: 5, tension: 1 },
+        memories: ["Você perguntou o que ‘perto’ significava para Pamela hoje.", "Você deixou o tempo de Pamela existir sem punição.", "Vocês escolheram uma noite sem pedir que ela provasse nada.", "Vocês criaram uma forma de perguntar cedo."],
+      };
+      this.activeScreen = "finale";
     } else if (this.demoEnabled) {
       this.activeRoute = "trio";
       this.activeChoice = ROUTES.trio.beats[0].choices[2];
@@ -884,7 +906,7 @@ export class GameWorld {
   private addRouteCard(parent: StackPanel, id: RouteId, index: number) {
     const route = ROUTES[id];
     const state = this.states[id];
-    const status = state.complete ? "epílogo disponível" : `capítulo ${state.chapter + 1}/3 · ${relationshipStatus(state.metrics)}`;
+    const status = state.complete ? "epílogo disponível" : state.needsRoutine ? `rotina pendente · capítulo ${state.chapter + 1}/${route.beats.length}` : `capítulo ${state.chapter + 1}/${route.beats.length} · ${relationshipStatus(state.metrics)}`;
     const latestMemory = state.memories.at(-1) ?? "Nenhuma memória registada ainda.";
     const label = `${index + 1}  ·  ${route.people}  —  ${status}`;
     const button = this.createButton(`route-${id}`, label, "100%", this.narrow ? "50px" : "54px", "#162642", () => this.openRoute(id));
@@ -901,7 +923,7 @@ export class GameWorld {
     const route = this.requireRoute();
     if (!route) return;
     const state = this.states[route.id];
-    const beat = route.beats[state.chapter];
+    const beat = this.resolveBeat(route, state);
     this.buildHeader(route.id);
     this.addPortraits(route.portraits);
 
@@ -910,7 +932,7 @@ export class GameWorld {
     tag.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
     tag.left = this.narrow ? "-5%" : "-4%";
     tag.top = this.narrow ? "92px" : "108px";
-    const tagText = this.text("route-people", `${route.people}\nCAPÍTULO ${state.chapter + 1}/3`, this.narrow ? 11 : 14, "#F1E5E0");
+    const tagText = this.text("route-people", `${route.people}\nETAPA ${state.chapter + 1}/${route.beats.length}`, this.narrow ? 11 : 14, "#F1E5E0");
     tagText.width = "86%";
     tagText.height = "84%";
     tagText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
@@ -951,7 +973,54 @@ export class GameWorld {
     const prompt = this.text("prompt", "Escolhe uma intenção. Ela altera o que esta relação pode conversar a seguir.", this.narrow ? 11 : 13, "#B9C7D7");
     prompt.height = "28px";
     content.addControl(prompt);
+    if (beat.interlude) {
+      const interlude = this.text("route-interlude-hint", "Depois desta cena, a rotina volta a fazer parte do caminho.", this.narrow ? 10 : 11, "#E8B5C6");
+      interlude.height = "22px";
+      content.addControl(interlude);
+    }
     beat.choices.forEach((choice, index) => this.addChoiceButton(content, choice, index));
+  }
+
+  private buildRouteInterlude() {
+    const route = this.requireRoute();
+    if (!route) return;
+    const state = this.states[route.id];
+    const previousBeat = route.beats[Math.max(0, state.chapter - 1)];
+    this.buildHeader(route.id);
+    this.addPortraits(route.portraits, this.narrow ? 0.5 : 0.76);
+
+    const panel = this.add(this.panel("route-interlude-panel", this.narrow ? "90%" : "60%", this.narrow ? "460px" : "420px", route.accent));
+    panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+    panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+    panel.left = this.narrow ? "5%" : "7%";
+    const content = new StackPanel("route-interlude-content");
+    content.width = "82%";
+    content.height = "82%";
+    content.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    content.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+    content.isVertical = true;
+    content.spacing = this.narrow ? 13 : 16;
+    panel.addControl(content);
+
+    const eyebrow = this.text("route-interlude-eyebrow", `PAMELA & JESSICA · ENTRE A ETAPA ${state.chapter} E ${state.chapter + 1}`, this.narrow ? 11 : 13, route.accent);
+    eyebrow.fontWeight = "700";
+    eyebrow.height = "26px";
+    content.addControl(eyebrow);
+    const heading = this.text("route-interlude-heading", "A conversa continua na rotina", this.narrow ? 31 : 41);
+    heading.fontFamily = "DM Serif Display";
+    heading.fontWeight = "700";
+    heading.height = this.narrow ? "66px" : "74px";
+    content.addControl(heading);
+    const copy = this.text("route-interlude-copy", previousBeat.interlude ?? "Antes da próxima conversa, escolhe como queres organizar tempo, energia e presença.", this.narrow ? 14 : 17, "#FAF1E9");
+    copy.height = this.narrow ? "104px" : "84px";
+    copy.lineSpacing = "4px";
+    content.addControl(copy);
+    const routine = this.createButton("route-interlude-routine", "Escolher uma ação de rotina", this.narrow ? "250px" : "290px", this.narrow ? "52px" : "56px", "#A93C63", () => this.openScreen("actions"));
+    routine.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+    content.addControl(routine);
+    const map = this.createButton("route-interlude-map", "Ver mapa e recursos", this.narrow ? "220px" : "260px", this.narrow ? "46px" : "50px", "#385A88", () => this.openDashboard());
+    map.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+    content.addControl(map);
   }
 
   private addChoiceButton(parent: StackPanel, choice: StoryChoice, index: number) {
@@ -1031,7 +1100,7 @@ export class GameWorld {
     const route = this.requireRoute();
     if (!route) return;
     const state = this.states[route.id];
-    const outcome = relationshipOutcome(state.metrics);
+    const outcome = route.outcome?.(state.metrics) ?? relationshipOutcome(state.metrics);
     this.buildHeader(route.id);
     this.addPortraits(route.portraits, 0.92);
 
@@ -1097,6 +1166,14 @@ export class GameWorld {
     return this.activeRoute ? ROUTES[this.activeRoute] : null;
   }
 
+  private resolveBeat(route: NarrativeRoute, state: RelationshipState): ConversationBeat {
+    const beat = route.beats[state.chapter];
+    const variant = beat.variants?.find((candidate) => meetsRouteRequirement(state.metrics, candidate.requirement));
+    if (variant) return { ...beat, ...variant };
+    if (beat.fallback) return { ...beat, ...beat.fallback };
+    return beat;
+  }
+
   private openWorldMap() {
     this.activeRoute = null;
     this.activeChoice = null;
@@ -1159,7 +1236,14 @@ export class GameWorld {
   }
 
   private runActivity(id: ActivityId) {
-    this.applyEconomyResult(performActivity(this.economy, this.states, id));
+    const result = performActivity(this.economy, this.states, id);
+    const activity = ACTIVITIES.find((candidate) => candidate.id === id);
+    const completed = result.economy.lastUpdate?.title === activity?.name;
+    if (this.states.trio.needsRoutine && completed) {
+      const relationships = result.relationships ?? this.states;
+      result.relationships = { ...relationships, trio: { ...relationships.trio, needsRoutine: false } };
+    }
+    this.applyEconomyResult(result);
   }
 
   private buy(id: import("./economy").ItemId) {
@@ -1188,7 +1272,7 @@ export class GameWorld {
   private openRoute(id: RouteId) {
     this.activeRoute = id;
     this.activeChoice = null;
-    this.activeScreen = this.states[id].complete ? "finale" : "conversation";
+    this.activeScreen = this.states[id].complete ? "finale" : this.states[id].needsRoutine ? "route-interlude" : "conversation";
     this.render();
   }
 
@@ -1207,7 +1291,8 @@ export class GameWorld {
     if (state.chapter < route.beats.length - 1) {
       state.chapter += 1;
       this.activeChoice = null;
-      this.activeScreen = "conversation";
+      state.needsRoutine = route.id === "trio";
+      this.activeScreen = state.needsRoutine ? "route-interlude" : "conversation";
     } else {
       state.complete = true;
       this.activeChoice = null;
@@ -1257,7 +1342,7 @@ export class GameWorld {
       if (this.activeScreen === "reflection") this.advance();
       else this.openMap();
     }
-    if (["actions", "store", "wallet", "market", "economy-feedback", "world-map", "location", "map"].includes(this.activeScreen) && event.key === "Escape") {
+    if (["actions", "store", "wallet", "market", "economy-feedback", "world-map", "location", "map", "route-interlude"].includes(this.activeScreen) && event.key === "Escape") {
       this.openDashboard();
     }
   }
@@ -1283,6 +1368,7 @@ export class GameWorld {
     if (this.activeScreen === "world-map") this.buildWorldMap();
     if (this.activeScreen === "location") this.buildLocation();
     if (this.activeScreen === "map") this.buildMap();
+    if (this.activeScreen === "route-interlude") this.buildRouteInterlude();
     if (this.activeScreen === "conversation") this.buildConversation();
     if (this.activeScreen === "reflection") this.buildReflection();
     if (this.activeScreen === "finale") this.buildFinale();

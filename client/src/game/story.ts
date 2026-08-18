@@ -2,7 +2,7 @@
  * STYLE — Each Croe Trio route has three chapters and multiple valid relational outcomes; no dialogue is a universal “win”.
  */
 import type { PortraitKey } from "./assets";
-import type { RelationshipEffect } from "./relationship";
+import type { RelationshipEffect, RelationshipMetrics } from "./relationship";
 
 export type RouteId = "trio" | "alice" | "elise" | "raven" | "saskia";
 export type Intention = "Escutar" | "Perguntar" | "Ser honesto" | "Dar espaço";
@@ -15,11 +15,33 @@ export interface StoryChoice {
   response: string;
 }
 
+export interface RouteRequirement {
+  minimum?: Partial<RelationshipMetrics>;
+  maximum?: Partial<RelationshipMetrics>;
+}
+
+export interface BeatVariant {
+  title?: string;
+  location?: string;
+  line: string;
+  choices: StoryChoice[];
+  requirement?: RouteRequirement;
+}
+
 export interface ConversationBeat {
   title: string;
   location: string;
   line: string;
   choices: StoryChoice[];
+  variants?: BeatVariant[];
+  fallback?: BeatVariant;
+  interlude?: string;
+}
+
+export interface RouteOutcome {
+  title: string;
+  line: string;
+  detail: string;
 }
 
 export interface NarrativeRoute {
@@ -29,6 +51,7 @@ export interface NarrativeRoute {
   accent: string;
   portraits: PortraitKey[];
   beats: ConversationBeat[];
+  outcome?: (metrics: RelationshipMetrics) => RouteOutcome;
 }
 
 export const OPENING_LINE =
@@ -42,46 +65,177 @@ const choice = (
   response: string,
 ): StoryChoice => ({ id, intention, text, effect, response });
 
+export function meetsRouteRequirement(metrics: RelationshipMetrics, requirement?: RouteRequirement) {
+  if (!requirement) return true;
+  const minimumMet = Object.entries(requirement.minimum ?? {}).every(([metric, value]) => metrics[metric as keyof RelationshipMetrics] >= (value ?? 0));
+  const maximumMet = Object.entries(requirement.maximum ?? {}).every(([metric, value]) => metrics[metric as keyof RelationshipMetrics] <= (value ?? 5));
+  return minimumMet && maximumMet;
+}
+
+const pamelaOutcome = (metrics: RelationshipMetrics): RouteOutcome => {
+  if (metrics.tension >= 3 || metrics.safety <= 2) {
+    return {
+      title: "Pausa que preserva",
+      line: "Pamela pede espaço com uma data para voltar à conversa. Ninguém some; o cuidado passa a ser não forçar uma definição antes da hora.",
+      detail: "Vocês escolheram espaço antes que o silêncio virasse ferida.",
+    };
+  }
+  if (metrics.bond >= 4 && metrics.clarity >= 4 && metrics.safety >= 4 && metrics.tension <= 1) {
+    return {
+      title: "Rotina a dois",
+      line: "Pamela propõe um check-in semanal, um date revisável e a liberdade de ajustar os dois. A proximidade deixa de parecer uma promessa fechada.",
+      detail: "Vocês construíram espaço para a conexão mudar sem desabar.",
+    };
+  }
+  if (metrics.bond >= 3 && metrics.clarity >= 3 && metrics.safety >= 4) {
+    return {
+      title: "Proximidade escolhida",
+      line: "Pamela escolhe o próximo encontro e deixa a transparência com Jessica fazer parte do caminho, não uma conversa escondida depois dele.",
+      detail: "Vocês continuaram sem exigir que o futuro se explicasse inteiro.",
+    };
+  }
+  return {
+    title: "Amizade íntima e honesta",
+    line: "Pamela preserva carinho e presença sem declarar um romance antes da hora. O vínculo continua possível porque nenhum gesto precisou virar dívida.",
+    detail: "Vocês preservaram cuidado sem transformá-lo em obrigação.",
+  };
+};
+
 export const ROUTES: Record<RouteId, NarrativeRoute> = {
   trio: {
     id: "trio",
     people: "Pamela & Jessica",
-    chapter: "O NÚCLEO QUE FICOU",
+    chapter: "A GEOMETRIA DO CALOR",
     accent: "#D69468",
     portraits: ["pamela", "jessica"],
+    outcome: pamelaOutcome,
     beats: [
       {
-        title: "O sofá às 07:12",
-        location: "SALA DO PENTHOUSE · MANHÃ CEDO",
+        title: "A camiseta emprestada",
+        location: "QUARTO DE PAMELA · MANHÃ",
         line:
-          "Pamela aproxima uma caneca, sem presumir que vais aceitá-la. Jessica deixa espaço no sofá. “Não precisamos fingir que esta manhã é simples”, diz ela. “Mas podemos tratá-la com cuidado.”",
+          "Pamela devolve uma camiseta que usou “só porque o cheiro lembrava você”. Ela percebe que ficou segurando o tecido tempo demais, sorri sem se esconder e pergunta se pode ficar perto por alguns minutos.",
         choices: [
-          choice("trio-1-listen", "Escutar", "Sentar-me e perguntar o que esta manhã significa para vocês.", { clarity: 1, safety: 1, tension: -1, memory: "Perguntaste o que a manhã significava para Pamela e Jessica." }, "Pamela segura a caneca com as duas mãos. Jessica agradece por a pergunta não tentar decidir por nenhuma das duas."),
-          choice("trio-1-question", "Perguntar", "Perguntar se o que está a crescer entre nós já tem um nome.", { clarity: 2, tension: 1, memory: "Pediste linguagem para o que está a crescer." }, "Jessica sorri de lado. Pamela responde com cuidado: “Ainda estamos a descobrir. Obrigada por perguntares.”"),
-          choice("trio-1-honest", "Ser honesto", "Dizer que me senti deixado de fora e não quero voltar a desaparecer em silêncio.", { clarity: 1, bond: 1, tension: -1, memory: "Nomeaste a ausência sem culpar ninguém." }, "Pamela diz: “Não precisas de pedir para ser visto.”"),
+          choice("pamela-0-meaning", "Perguntar", "Perguntar o que ficar perto significa para Pamela hoje.", { clarity: 2, memory: "Você perguntou o que ‘perto’ significava para Pamela hoje." }, "Pamela pensa antes de responder. “Obrigada por não fazer parecer que eu devia saber tudo já.”"),
+          choice("pamela-0-limit", "Ser honesto", "Dizer que gosto dela perto, desde que possamos dizer quando alguma coisa mudar.", { bond: 1, safety: 1, memory: "Você deixou Pamela aproximar-se sem transformar o gesto em obrigação." }, "Pamela encosta o ombro no seu e pergunta se pode ficar assim por alguns minutos."),
+          choice("pamela-0-jessica", "Escutar", "Reconhecer que não quer que essa aproximação machuque ou apague Jessica.", { clarity: 1, tension: 1, memory: "Você falou de Jessica sem fingir que a conversa era simples." }, "Pamela concorda devagar. “Ela não é um problema que a gente precisa contornar. É parte da minha vida.”"),
         ],
+        interlude: "Pamela deixa a camiseta dobrada na cadeira. Um bloco de rotina dá espaço para a pergunta continuar existindo antes da próxima conversa.",
       },
       {
-        title: "O que pertence a todos",
-        location: "COZINHA DO PENTHOUSE · MAIS TARDE",
+        title: "Coisas que Pamela esquece",
+        location: "COZINHA DO PENTHOUSE · TARDE",
         line:
-          "Jessica desenha três círculos no vidro embaciado. Pamela observa, pensativa. “O problema não é quem fica perto”, diz ela. “É quando alguém acha que já não tem lugar.”",
+          "Pamela esqueceu uma presilha, deixou o chá esfriar e, entre procurar os dois, pergunta como você escolhe um perfume ou uma música. Ela ri da própria distração, mas espera para saber se você vai tentar consertá-la ou acompanhá-la.",
         choices: [
-          choice("trio-2-boundary", "Dar espaço", "Pedir que ninguém prometa um formato antes de saber se ele é seguro para todos.", { safety: 2, clarity: 1, memory: "Protegeste o ritmo do trio antes de pedir definição." }, "Jessica apaga um dos círculos com a manga. “Então começamos por não prometer demais.”"),
-          choice("trio-2-listen", "Escutar", "Perguntar do que Pamela e Jessica precisam para não se perderem uma na outra.", { bond: 1, safety: 1, memory: "Escutaste o vínculo que Pamela e Jessica já tinham." }, "Pamela olha para Jessica antes de responder. A pausa entre elas deixa claro que a pergunta importa."),
-          choice("trio-2-honest", "Ser honesto", "Dizer que quero pertencer sem ocupar um espaço que não me foi oferecido.", { clarity: 2, safety: 1, memory: "Pediste pertença sem a transformar em direito." }, "Jessica deixa o marcador na mesa. “Isso é exatamente o tipo de conversa que eu queria ter.”"),
+          choice("pamela-1-clip", "Escutar", "Procurar a presilha junto com Pamela e perguntar se ela quer ajuda ou companhia.", { bond: 1, clarity: 1, memory: "Você ajudou Pamela sem transformar distração em defeito." }, "Ela aponta para o sofá, depois muda de ideia e ri. “Companhia. A ajuda pode vir depois.”"),
+          choice("pamela-1-tea", "Perguntar", "Deixar que Pamela escolha o aroma e a temperatura de uma nova bebida.", { bond: 1, safety: 1, memory: "Você seguiu a curiosidade de Pamela em vez de escolher por ela." }, "Pamela fecha os olhos para sentir o cheiro. “Isso parece pequeno, mas é exatamente o tipo de escolha que eu queria poder fazer.”"),
+          choice("pamela-1-checkin", "Dar espaço", "Enviar um check-in: conversa, distração ou espaço — o que ela preferir.", { safety: 1, tension: -1, memory: "Você deixou Pamela escolher se queria conversa, distração ou espaço." }, "A resposta chega mais tarde: “Espaço agora. Mas obrigada por perguntar de um jeito que não soa como abandono.”"),
         ],
+        interlude: "A pergunta importante fica entre vocês: Pamela quer saber se pode falar de Jessica sem fazer parecer que está deixando alguém para trás.",
       },
       {
-        title: "A manhã seguinte",
-        location: "VARANDA · CIDADE A ACORDAR",
+        title: "O lugar seguro de Jessica",
+        location: "VARANDA DO PENTHOUSE · NOITE",
         line:
-          "O café já arrefeceu. A cidade começa a ganhar cor. Pamela propõe uma manhã por semana só para conversar; Jessica pergunta se isso parece próximo demais ou insuficiente.",
+          "Pamela fala de Jessica como história, quarto, infância e lugar seguro. A atração nova não diminui isso; o medo é que ela vire segredo ou competição antes de encontrar linguagem para existir.",
         choices: [
-          choice("trio-3-accept", "Ser honesto", "Aceitar a rotina e dizer que quero aprender a aparecer antes de a falta doer.", { bond: 2, clarity: 1, tension: -1, memory: "Escolheste uma rotina de presença com Pamela e Jessica." }, "As duas assentem. A proposta deixa de ser uma promessa grande e passa a ser uma data concreta no calendário."),
-          choice("trio-3-pause", "Dar espaço", "Pedir tempo para pensar numa rotina que não transforme cuidado em obrigação.", { safety: 2, tension: -1, memory: "Pediste tempo antes de transformar a rotina em compromisso." }, "Pamela concorda de imediato. Jessica escreve apenas: “rever na próxima semana”."),
-          choice("trio-3-question", "Perguntar", "Perguntar como vamos notar cedo quando alguém começar a afastar-se outra vez.", { clarity: 2, safety: 1, memory: "Criaste uma pergunta para prevenir novos silêncios." }, "Jessica pensa um instante. “A gente pergunta antes de preencher a história por conta própria.”"),
+          choice("pamela-2-agency", "Perguntar", "Perguntar o que Pamela gostaria que Jessica soubesse quando chegar a hora.", { clarity: 2, safety: 1, memory: "Você devolveu a Pamela a escolha de como contar a própria história." }, "Pamela respira, aliviada. “Eu queria escolher as palavras antes de alguém escolher por mim.”"),
+          choice("pamela-2-wait", "Dar espaço", "Dizer que vocês podem esperar até ela saber o que quer dizer, sem punição por isso.", { safety: 2, tension: -1, memory: "Você deixou o tempo de Pamela existir sem punição." }, "Pamela encosta na grade da varanda. “Esperar é diferente de esconder. Obrigada por saber a diferença.”"),
+          choice("pamela-2-jessica-gift", "Ser honesto", "Oferecer companhia se Pamela quiser escolher uma lembrança simples para Jessica.", { bond: 1, clarity: 1, memory: "Você reconheceu que o carinho de Pamela por Jessica continua sendo parte da sua vida." }, "Pamela sorri com os olhos molhados. “Eu gosto que você tenha dito companhia, não autorização.”"),
         ],
+        variants: [
+          {
+            requirement: { minimum: { clarity: 2 }, maximum: { tension: 3 } },
+            line: "Pamela fala de Jessica como história, quarto, infância e lugar seguro. A atração nova não diminui isso; o medo é que ela vire segredo ou competição antes de encontrar linguagem para existir.",
+            choices: [
+              choice("pamela-2-agency-clear", "Perguntar", "Perguntar o que Pamela gostaria que Jessica soubesse quando chegar a hora.", { clarity: 2, safety: 1, memory: "Você devolveu a Pamela a escolha de como contar a própria história." }, "Pamela respira, aliviada. “Eu queria escolher as palavras antes de alguém escolher por mim.”"),
+              choice("pamela-2-wait-clear", "Dar espaço", "Dizer que vocês podem esperar até ela saber o que quer dizer, sem punição por isso.", { safety: 2, tension: -1, memory: "Você deixou o tempo de Pamela existir sem punição." }, "Pamela encosta na grade da varanda. “Esperar é diferente de esconder. Obrigada por saber a diferença.”"),
+              choice("pamela-2-jessica-clear", "Ser honesto", "Oferecer companhia se Pamela quiser escolher uma lembrança simples para Jessica.", { bond: 1, clarity: 1, memory: "Você reconheceu que o carinho de Pamela por Jessica continua sendo parte da sua vida." }, "Pamela sorri com os olhos molhados. “Eu gosto que você tenha dito companhia, não autorização.”"),
+            ],
+          },
+          {
+            requirement: { minimum: { safety: 3 }, maximum: { tension: 3 } },
+            line: "Pamela confia que você pode ouvir uma coisa difícil: Jessica é história, quarto, infância e lugar seguro. A atração nova não diminui isso; ela só precisa de um modo honesto de existir.",
+            choices: [
+              choice("pamela-2-agency-safe", "Perguntar", "Perguntar o que Pamela gostaria que Jessica soubesse quando chegar a hora.", { clarity: 2, safety: 1, memory: "Você devolveu a Pamela a escolha de como contar a própria história." }, "Pamela respira, aliviada. “Eu queria escolher as palavras antes de alguém escolher por mim.”"),
+              choice("pamela-2-wait-safe", "Dar espaço", "Dizer que vocês podem esperar até ela saber o que quer dizer, sem punição por isso.", { safety: 2, tension: -1, memory: "Você deixou o tempo de Pamela existir sem punição." }, "Pamela encosta na grade da varanda. “Esperar é diferente de esconder. Obrigada por saber a diferença.”"),
+              choice("pamela-2-jessica-safe", "Ser honesto", "Oferecer companhia se Pamela quiser escolher uma lembrança simples para Jessica.", { bond: 1, clarity: 1, memory: "Você reconheceu que o carinho de Pamela por Jessica continua sendo parte da sua vida." }, "Pamela sorri com os olhos molhados. “Eu gosto que você tenha dito companhia, não autorização.”"),
+            ],
+          },
+        ],
+        fallback: {
+          title: "Uma conversa antes da conversa",
+          line: "Pamela olha para as luzes da cidade e admite que, agora, falar sobre Jessica parece rápido demais. O gesto mais honesto é reparar a tensão antes de pedir uma definição.",
+          choices: [
+            choice("pamela-2-repair-listen", "Escutar", "Dizer que você não precisa entender tudo agora; pode só ficar e ouvir.", { safety: 1, tension: -1, memory: "Você ofereceu escuta antes de pedir uma definição sobre Jessica." }, "Pamela deixa o silêncio durar um pouco. “Obrigada por não usar a minha hesitação como problema seu.”"),
+            choice("pamela-2-repair-apology", "Ser honesto", "Reconhecer que uma pressa sua tornou a conversa mais pesada.", { clarity: 1, safety: 1, tension: -1, memory: "Você nomeou a pressa antes que ela virasse silêncio." }, "Pamela aceita o pedido de desculpa sem torná-lo uma cena de perdão instantâneo."),
+            choice("pamela-2-repair-pause", "Dar espaço", "Marcar uma nova conversa com hora definida e deixar Pamela escolher se quer falar dela.", { safety: 2, tension: -1, memory: "Você marcou uma conversa futura sem exigir que Pamela a preenchesse agora." }, "“Assim eu consigo voltar”, Pamela diz. “Não porque devo, mas porque sei onde a porta está.”"),
+          ],
+        },
+        interlude: "A casa continua existindo entre uma conversa e outra. Um bloco de rotina pode abrir espaço para que a transparência seja um gesto, não apenas uma fala.",
+      },
+      {
+        title: "Um date de curiosidade",
+        location: "DOWNTOWN · NOITE",
+        line: "Com a base entre vocês mais legível, Pamela aceita um encontro simples. Ela escolhe o detalhe: a textura de uma capa de livro, uma fruta na feira ou a hora de voltar para casa.",
+        choices: [
+          choice("pamela-3-books", "Perguntar", "Ir à banca de livros e perguntar o que ela repara antes de escolher um título.", { bond: 1, clarity: 1, memory: "Vocês escolheram uma noite sem pedir que ela provasse nada." }, "Pamela escolhe um livro pelo papel. Depois ri: “Eu não sei se isso é um bom critério.” Você responde que não precisa ser.”"),
+          choice("pamela-3-coast", "Escutar", "Propor uma caminhada curta e deixar Pamela escolher o caminho e a hora de voltar.", { bond: 1, safety: 1, memory: "Você deixou Pamela escolher o ritmo de uma caminhada de curiosidade." }, "Pamela aponta a rua menos iluminada, mas pergunta antes se você prefere outra. A decisão pequena vira uma prática de atenção."),
+          choice("pamela-3-tea", "Dar espaço", "Ficar no penthouse para chá, música e uma distância que Pamela possa ajustar.", { safety: 1, tension: -1, memory: "Você deixou a intimidade continuar válida sem transformar a saída em obrigação." }, "Pamela escolhe uma música baixa. “Uma noite bonita não responde a casa inteira”, ela lembra. Você concorda e permanece."),
+        ],
+        variants: [
+          {
+            requirement: { minimum: { bond: 3, clarity: 3, safety: 3 }, maximum: { tension: 3 } },
+            line: "Com a base entre vocês mais legível, Pamela aceita um encontro simples. Ela escolhe o detalhe: a textura de uma capa de livro, uma fruta na feira ou a hora de voltar para casa.",
+            choices: [
+              choice("pamela-3-books-open", "Perguntar", "Ir à banca de livros e perguntar o que ela repara antes de escolher um título.", { bond: 1, clarity: 1, memory: "Vocês escolheram uma noite sem pedir que ela provasse nada." }, "Pamela escolhe um livro pelo papel. Depois ri: “Eu não sei se isso é um bom critério.” Você responde que não precisa ser.”"),
+              choice("pamela-3-coast-open", "Escutar", "Propor uma caminhada curta e deixar Pamela escolher o caminho e a hora de voltar.", { bond: 1, safety: 1, memory: "Você deixou Pamela escolher o ritmo de uma caminhada de curiosidade." }, "Pamela aponta a rua menos iluminada, mas pergunta antes se você prefere outra. A decisão pequena vira uma prática de atenção."),
+              choice("pamela-3-tea-open", "Dar espaço", "Ficar no penthouse para chá, música e uma distância que Pamela possa ajustar.", { safety: 1, tension: -1, memory: "Você deixou a intimidade continuar válida sem transformar a saída em obrigação." }, "Pamela escolhe uma música baixa. “Uma noite bonita não responde a casa inteira”, ela lembra. Você concorda e permanece."),
+            ],
+          },
+        ],
+        fallback: {
+          title: "Curiosidade sem saída",
+          location: "SALA DO PENTHOUSE · FIM DE TARDE",
+          line: "Pamela não acha que um date seja a conversa certa ainda. Ela oferece uma alternativa menor: chá, uma caminhada no quarteirão ou marcar outra noite com mais descanso e clareza.",
+          choices: [
+            choice("pamela-3-fallback-tea", "Escutar", "Aceitar o chá e perguntar que distância parece confortável hoje.", { safety: 1, memory: "Você deixou Pamela definir a distância durante um chá simples." }, "Pamela move a cadeira alguns centímetros e sorri quando você não interpreta isso como rejeição."),
+            choice("pamela-3-fallback-schedule", "Perguntar", "Marcar uma noite futura com início, fim e uma forma clara de remarcar.", { clarity: 1, safety: 1, memory: "Você marcou uma noite futura sem transformar espera em silêncio." }, "Pamela anota a hora e acrescenta, por conta própria, que pode mudar de ideia sem explicar tudo."),
+            choice("pamela-3-fallback-pause", "Dar espaço", "Dizer que o encontro pode esperar e que você prefere preservar a conversa.", { safety: 1, tension: -1, memory: "Você preferiu preservar a conversa em vez de usar um date como compensação." }, "Pamela parece aliviada. A proximidade não diminui; só fica menos apressada."),
+          ],
+        },
+        interlude: "O date ou a alternativa deixam uma pergunta em aberto: que tipo de próximo passo cabe numa casa em que todos continuam sendo reais depois da noite terminar?",
+      },
+      {
+        title: "Nova geometria",
+        location: "VARANDA DO PENTHOUSE · AMANHECER",
+        line: "Pamela revisita as memórias que vocês fizeram e diz o que precisa agora. Ela pergunta se gostaria de incluir Jessica numa conversa breve — não para pedir permissão, mas para que a mudança não exista atrás de uma porta fechada.",
+        choices: [
+          choice("pamela-4-checkin", "Ser honesto", "Criar um check-in semanal e um date revisável, com liberdade para ajustar os dois.", { bond: 1, clarity: 1, tension: -1, memory: "Vocês criaram uma forma de perguntar cedo." }, "Pamela escreve uma pergunta simples no telemóvel: “como isso está cabendo hoje?”. Ela diz que prefere perguntas pequenas a promessas enormes."),
+          choice("pamela-4-friendship", "Dar espaço", "Definir amizade íntima e honesta, sem promessa romântica antes da hora.", { safety: 1, memory: "Você preservou cuidado sem transformá-lo em obrigação." }, "Pamela parece emocionada, não rejeitada. “Isso ainda é uma escolha de ficar na minha vida.”"),
+          choice("pamela-4-pause", "Perguntar", "Pedir uma pausa com data de revisão, para que a distância não precise virar silêncio.", { safety: 1, tension: -1, memory: "Você escolheu uma pausa com uma data para retornar à conversa." }, "Pamela escolhe a data junto com você e pergunta se prefere uma mensagem curta ou uma caminhada para recomeçar."),
+        ],
+        variants: [
+          {
+            requirement: { minimum: { safety: 4 }, maximum: { tension: 2 } },
+            line: "Pamela revisita as memórias que vocês fizeram e diz o que precisa agora. Ela pergunta se gostaria de incluir Jessica numa conversa breve — não para pedir permissão, mas para que a mudança não exista atrás de uma porta fechada.",
+            choices: [
+              choice("pamela-4-checkin-open", "Ser honesto", "Criar um check-in semanal e um date revisável, com liberdade para ajustar os dois.", { bond: 1, clarity: 1, tension: -1, memory: "Vocês criaram uma forma de perguntar cedo." }, "Pamela escreve uma pergunta simples no telemóvel: “como isso está cabendo hoje?”. Ela diz que prefere perguntas pequenas a promessas enormes."),
+              choice("pamela-4-together-open", "Perguntar", "Marcar a próxima conversa com Pamela e, se ela quiser, Jessica.", { safety: 1, tension: -1, memory: "Você marcou transparência como próximo passo, não como exigência." }, "Pamela manda uma mensagem para Jessica só depois de escolher as palavras. “Obrigada por deixar isso ser meu também.”"),
+              choice("pamela-4-friendship-open", "Dar espaço", "Definir amizade íntima e honesta, sem promessa romântica antes da hora.", { safety: 1, memory: "Você preservou cuidado sem transformá-lo em obrigação." }, "Pamela parece emocionada, não rejeitada. “Isso ainda é uma escolha de ficar na minha vida.”"),
+            ],
+          },
+        ],
+        fallback: {
+          title: "Próximo passo menor",
+          line: "A conversa completa com Jessica ainda não parece segura. Pamela prefere escolher um passo menor, visível e reversível antes de decidir mais do que vocês podem sustentar.",
+          choices: [
+            choice("pamela-4-fallback-conversation", "Perguntar", "Marcar uma nova conversa com Pamela e deixar que ela convide Jessica apenas se quiser.", { clarity: 1, safety: 1, memory: "Você deixou Pamela escolher se e quando Jessica entraria na conversa." }, "Pamela guarda a data e diz que um próximo encontro já é suficiente por enquanto."),
+            choice("pamela-4-fallback-friendship", "Dar espaço", "Definir amizade íntima e honesta por agora.", { safety: 1, memory: "Você preservou cuidado sem transformá-lo em obrigação." }, "Pamela concorda que proximidade não precisa ser um rótulo apressado para ser real."),
+            choice("pamela-4-fallback-pause", "Ser honesto", "Pedir uma pausa com data de revisão, antes que a tensão vire distância sem nome.", { safety: 1, tension: -1, memory: "Você escolheu uma pausa com uma data para retornar à conversa." }, "Pamela escolhe a data junto com você e pede uma mensagem curta quando chegar o dia."),
+          ],
+        },
       },
     ],
   },

@@ -102,6 +102,13 @@
 - [x] Integrar feedbacks de recursos e alternativas saudáveis às telas existentes.
 - [x] Testar o ciclo semanal, salvar a atualização e verificar o carregamento no GitHub Pages, sem implementar a rota expandida de Pamela.
 
+## Implementação da rota expandida de Pamela
+
+- [x] Revisar o GDD canônico v1.1 e comparar a rota atual com as etapas planejadas; a implementação precisa substituir os 3 beats lineares por 5 etapas, gates, variantes de recuperação, interlúdios de rotina e epílogos específicos.
+- [x] Implementar capítulos, gates de atributos, memórias e escolhas da rota Pamela & Jessica.
+- [x] Integrar ações de cuidado, presentes, dates e economia aos desbloqueios da rota.
+- [x] Testar caminhos de sucesso, pausa e reparação; build estático validado, pronto para salvar e sincronizar a entrega no GitHub.
+
 ### Integração com sistemas existentes
 
 - [ ] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.
