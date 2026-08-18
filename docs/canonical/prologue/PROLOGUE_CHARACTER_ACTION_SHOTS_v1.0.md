@@ -19,3 +19,5 @@ The runtime maps these moments directly to `prologue01` through `prologue07`; th
 The Scene 5 frame visibly shows the shared dawn-couch routine, with the player figure seated, the two partners approaching from either side and three mugs on the table. The Scene 7 frame visibly shows Alice at the doorway observing the trio in the living room. Both retain the lower-left shadowed zone reserved for narration.
 
 The local canvas check confirmed Scene 1 now shows Alice and the player’s hands in the wedding-ring gesture behind the narration panel, rather than an empty environment. The existing portrait remains an additional character anchor on the right.
+
+The public GitHub Pages check confirmed the same wedding frame after canvas initialization, with the illustrated hands and Alice visible behind the high-contrast narration panel.

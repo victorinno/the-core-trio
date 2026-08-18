@@ -165,7 +165,7 @@
 - [x] Definir os personagens, gestos e relações visuais de cada uma das sete cenas.
 - [x] Gerar sete ilustrações de ação com os personagens no momento narrado.
 - [x] Substituir os fundos ambientais pelas ilustrações e preservar a legibilidade do texto.
-- [ ] Validar e publicar a abertura ilustrada no GitHub Pages.
+- [x] Validar e publicar a abertura ilustrada no GitHub Pages.
 
 ### Integração com sistemas existentes
 
