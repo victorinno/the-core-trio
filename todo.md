@@ -100,7 +100,7 @@
 - [x] Auditar o motor atual contra a especificação canônica de rotina e economia; tempo, energia, trabalho, carteiras, loja, inventário e mapa existem, mas faltam sono explícito, limites semanais, gates de date e custo da Coast.
 - [x] Implementar ciclo de sono, agenda, trabalho, descanso, dinheiro, inventário e regras de deslocamento.
 - [x] Integrar feedbacks de recursos e alternativas saudáveis às telas existentes.
-- [ ] Testar o ciclo semanal e salvar a atualização sem implementar a rota expandida de Pamela.
+- [x] Testar o ciclo semanal, salvar a atualização e verificar o carregamento no GitHub Pages, sem implementar a rota expandida de Pamela.
 
 ### Integração com sistemas existentes
 
