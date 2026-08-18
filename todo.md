@@ -128,7 +128,7 @@
 - [x] Registrar o baseline do bundle e dos comandos de build antes de mudanças no Vite.
 - [x] Extrair o resolvedor puro de teclado e cobrir KBD-01 a KBD-09 com Vitest, incluindo atalhos acessíveis para interlúdio, categorias e atividades de rotina.
 - [x] Executar e registrar PAM-EXP-01: a passagem manual revelou Tensão insuficientemente reduzida; o roteiro foi corrigido, o percurso automatizado alcançou Rotina a dois e a cena final foi validada visualmente.
-- [ ] Sincronizar os resultados da Onda 1 e validar o build público.
+- [x] Sincronizar os resultados da Onda 1 e validar o build público.
 
 ### Integração com sistemas existentes
 
