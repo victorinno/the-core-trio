@@ -217,6 +217,13 @@
 - [x] Corrigir e reenviar a fonte ou o build que estiver mantendo a interface anterior.
 - [x] Confirmar visualmente a composição publicada sem qualquer estrutura de diálogo.
 
+## Refinamento de UX de dating sim
+
+- [x] Auditar orientação, hierarquia de informação, feedback de ações e apresentação de relações no fluxo atual.
+- [x] Definir melhorias compatíveis para próximos passos, estados emocionais e ações indisponíveis.
+- [x] Implementar o primeiro conjunto de melhorias sem reintroduzir caixas nas escolhas narrativas.
+- [ ] Validar, publicar e documentar o refinamento.
+
 ### Integração com sistemas existentes
 
 - [ ] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.

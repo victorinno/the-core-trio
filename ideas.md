@@ -79,3 +79,6 @@ O logótipo é composto por **três linhas curvas que se aproximam sem se fechar
 - Painéis de reflexão e epílogo recebem o **limiar de conversa** em Amanhecer de Ameixa e a marca relacional de três círculos, ligando consequências ao espaço do apartamento e não a um ecrã de pontuação genérico.
 - O quadro de rotina mantém o ensemble visível: Pamela e Jessica surgem como âncoras luminosas por trás da porta semanal, enquanto o limiar em Amanhecer de Ameixa e a marca de três círculos recordam que tempo, dinheiro e cuidado existem dentro da casa partilhada.
 - As portas da semana usam verbos relacionais — presença, gesto com contexto, recurso partilhado e escuta — para que a economia não pareça uma camada neutra de gestão.
+- Nenhuma rota apresenta apenas um fundo azul: painéis de vidro, limiares em Amanhecer de Ameixa, linhas de ligação e ao menos uma âncora narrativa mantêm o penthouse habitado.
+- Telas de rotina mantêm Pamela e Jessica visíveis como presença de ensemble, enquanto a cena de escolha preserva espaço para as opções sem caixa.
+- Valores de relação não aparecem como números na cena; o estado é comunicado por leitura emocional no fluxo e pela lista textual de ritmos no menu NPC.

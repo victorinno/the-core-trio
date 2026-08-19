@@ -549,22 +549,6 @@ export class GameWorld {
       rail.addControl(button);
     });
 
-    if (routeId) {
-      const state = this.states[routeId];
-      const metrics = this.text(
-        "relationship-metrics",
-        METRICS.map((metric) => `${metric.short}${state.metrics[metric.id]}`).join("  ·  "),
-        this.narrow ? 12 : 15,
-        "#E8B5C6",
-      );
-      metrics.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
-      metrics.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-      metrics.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
-      metrics.left = this.narrow ? "-14px" : "-34px";
-      metrics.width = this.narrow ? "170px" : "230px";
-      bar.addControl(metrics);
-    }
-
     if (false && this.activeScreen !== "title" && this.activeScreen !== "prologue") {
       const nav = new StackPanel("persistent-place-nav");
       nav.width = this.narrow ? "250px" : "290px";
@@ -615,7 +599,7 @@ export class GameWorld {
     menu.addControl(content);
     const copy: Record<UtilityMenu, [string, string]> = {
       calendar: [`WEEK ${weekNumber(this.economy)} · DAY ${this.economy.day}`, `${slotName(this.economy)} · Energy ${this.economy.energy}/4`],
-      npcs: ["WHO IS AVAILABLE", Object.values(ROUTES).map((route) => `${route.people}: ${relationshipStatus(this.states[route.id].metrics)}`).join("  ·  ")],
+      npcs: ["WHO IS AVAILABLE", Object.values(ROUTES).map((route) => `${route.people} — ${relationshipStatus(this.states[route.id].metrics)}`).join("\n")],
       bank: ["PLAYER BANK", `Personal $${this.economy.personal} · Invested $${this.economy.invested}`],
       family: ["FAMILY FUND", `$${this.economy.family} shared · contributions support the household`],
     };
@@ -625,7 +609,7 @@ export class GameWorld {
     heading.height = "28px";
     content.addControl(heading);
     const body = this.text("utility-body", detail, this.narrow ? 13 : 15, "#FAF1E9");
-    body.height = this.narrow ? "72px" : "54px";
+    body.height = this.utilityMenu === "npcs" ? (this.narrow ? "106px" : "84px") : this.narrow ? "72px" : "54px";
     content.addControl(body);
     const close = this.createButton("utility-close", "Close", "110px", "30px", "#385A88", () => { this.utilityMenu = null; this.render(); });
     close.fontSize = this.narrow ? 10 : 11;
@@ -871,7 +855,7 @@ export class GameWorld {
   private buildDashboard() {
     this.buildHeader(null);
     this.addPortraits(["pamela", "jessica"], this.narrow ? 0.24 : 0.44);
-    const panel = this.add(this.panel("week-dashboard", this.narrow ? "90%" : "64%", this.narrow ? "690px" : "610px", "#B84A71"));
+    const panel = this.add(this.panel("week-dashboard", this.narrow ? "90%" : "64%", this.narrow ? "690px" : "660px", "#B84A71"));
     panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
     panel.left = this.narrow ? "5%" : "5%";
@@ -899,20 +883,24 @@ export class GameWorld {
     kicker.fontWeight = "700";
     kicker.height = "24px";
     content.addControl(kicker);
-    const relationshipMark = this.text("week-relation-mark", "○  ○  ○   A CASA AINDA ESTÁ A ESCUTAR", this.narrow ? 9 : 11, "#E8B5C6");
+    const relationshipMark = this.text("week-relation-mark", "○  ○  ○   CURRENT FOCUS", this.narrow ? 9 : 11, "#E8B5C6");
     relationshipMark.fontWeight = "700";
     relationshipMark.height = "20px";
     relationshipMark.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
     content.addControl(relationshipMark);
-    const heading = this.text("week-heading", "O que cabe agora?", this.narrow ? 32 : 42);
+    const heading = this.text("week-heading", "What needs your attention?", this.narrow ? 32 : 42);
     heading.fontFamily = "DM Serif Display";
     heading.fontWeight = "700";
     heading.height = this.narrow ? "62px" : "70px";
     content.addControl(heading);
-    const status = this.text("week-status", `Energia ${this.economy.energy}/4  ·  Pessoal §${this.economy.personal}  ·  Família §${this.economy.family}  ·  Investido §${this.economy.invested}`, this.narrow ? 12 : 15, "#C6D0DD");
+    const guidance = this.text("week-guidance", this.nextStepGuidance(), this.narrow ? 14 : 17, "#FAF1E9");
+    guidance.height = this.narrow ? "54px" : "42px";
+    guidance.lineSpacing = "3px";
+    content.addControl(guidance);
+    const status = this.text("week-status", `Energy ${this.economy.energy}/4  ·  Personal §${this.economy.personal}  ·  Family §${this.economy.family}  ·  Invested §${this.economy.invested}`, this.narrow ? 12 : 15, "#C6D0DD");
     status.height = this.narrow ? "38px" : "30px";
     content.addControl(status);
-    const note = this.text("week-note", "Dinheiro abre possibilidades; presença, limite e contexto determinam o que uma ação significa.", this.narrow ? 12 : 14, "#B9C7D7");
+    const note = this.text("week-note", "Money can prepare a moment. Care, pace, and consent determine what it means.", this.narrow ? 12 : 14, "#B9C7D7");
     note.height = this.narrow ? "42px" : "34px";
     content.addControl(note);
     if (this.economy.weeklyNotice) {
@@ -922,11 +910,11 @@ export class GameWorld {
     }
 
     const buttons: Array<[string, string, () => void, string]> = [
-      ["1 · Tempo", "Escolher uma forma de presença", () => this.openScreen("actions"), "#A93C63"],
-      ["2 · Bolsa", "Preparar um gesto com contexto", () => this.openScreen("store"), "#273C60"],
-      ["3 · Casa", "Cuidar do recurso que é partilhado", () => this.openScreen("wallet"), "#806342"],
-      ["4 · Mercado", "Decidir quanto risco cabe na semana", () => this.openScreen("market"), "#416A8A"],
-      ["5 · Conversas", "Perguntar quem precisa de presença", () => this.openMap(), "#285B57"],
+      ["1 · TIME", "Choose how to show up", () => this.openScreen("actions"), "#A93C63"],
+      ["2 · BAG", "Prepare a gesture with context", () => this.openScreen("store"), "#273C60"],
+      ["3 · HOUSE", "Look after the shared resource", () => this.openScreen("wallet"), "#806342"],
+      ["4 · MARKET", "Decide how much risk fits this week", () => this.openScreen("market"), "#416A8A"],
+      ["5 · CONVERSATIONS", "See who has room to connect", () => this.openMap(), "#285B57"],
     ];
     buttons.forEach(([title, subtitle, handler, color], index) => {
       const button = this.createButton(`dashboard-${index}`, `${title}  —  ${subtitle}`, "100%", this.narrow ? "50px" : "52px", color, handler);
@@ -937,6 +925,7 @@ export class GameWorld {
 
   private buildActions() {
     this.buildHeader(null);
+    this.addPortraits(["pamela", "jessica"], this.narrow ? 0.16 : 0.3);
     const panel = this.add(this.panel("action-panel", this.narrow ? "90%" : "66%", this.narrow ? "700px" : "635px", "#D69468"));
     panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
@@ -951,23 +940,23 @@ export class GameWorld {
     content.spacing = this.narrow ? 5 : 6;
     panel.addControl(content);
 
-    const kicker = this.text("action-kicker", `DIA ${this.economy.day} · ${slotName(this.economy).toUpperCase()} · ENERGIA ${this.economy.energy}/4`, this.narrow ? 11 : 13, "#D69468");
+    const kicker = this.text("action-kicker", `DAY ${this.economy.day} · ${slotName(this.economy).toUpperCase()} · ENERGY ${this.economy.energy}/4`, this.narrow ? 11 : 13, "#D69468");
     kicker.fontWeight = "700";
     kicker.height = "21px";
     content.addControl(kicker);
-    const heading = this.text("action-heading", "Escolhe como estar presente", this.narrow ? 28 : 36);
+    const heading = this.text("action-heading", "Choose how to show up", this.narrow ? 28 : 36);
     heading.fontFamily = "DM Serif Display";
     heading.fontWeight = "700";
     heading.height = this.narrow ? "48px" : "56px";
     content.addControl(heading);
-    const prompt = this.text("action-prompt", "Ações de cuidado criam memórias uma vez por semana; trabalho cria margem; dates exigem Segurança 3.", this.narrow ? 10 : 12, "#B9C7D7");
+    const prompt = this.text("action-prompt", "Care becomes meaningful once per week; work makes room; dates need a shared sense of comfort.", this.narrow ? 10 : 12, "#B9C7D7");
     prompt.height = this.narrow ? "34px" : "28px";
     content.addControl(prompt);
 
     const categories: Array<{ id: ActionCategory; label: string; color: string }> = [
-      { id: "work", label: "Rotina e trabalho", color: "#385A88" },
-      { id: "care", label: "Cuidados e favores", color: "#806342" },
-      { id: "social", label: "Dates e presentes", color: "#A93C63" },
+      { id: "work", label: "Routine & work", color: "#385A88" },
+      { id: "care", label: "Care & favors", color: "#806342" },
+      { id: "social", label: "Dates & gifts", color: "#A93C63" },
     ];
     categories.forEach((category) => {
       const button = this.createButton(`action-category-${category.id}`, category.label, "100%", this.narrow ? "34px" : "38px", this.actionCategory === category.id ? category.color : "#162642", () => {
@@ -980,12 +969,14 @@ export class GameWorld {
 
     const filteredActivities = this.visibleActivities();
     filteredActivities.forEach((activity, index) => {
-      const suffix = activity.income ? `+§${activity.income}` : activity.cost ? `−§${activity.cost}` : activity.requires ? `usa item` : "sem custo";
+      const suffix = activity.income ? `+§${activity.income}` : activity.cost ? `−§${activity.cost}` : activity.requires ? "uses an item" : "no cost";
       const color = activity.kind === "Trabalho" ? "#385A88" : activity.kind === "Date" ? "#A93C63" : activity.kind === "Cuidado" ? "#806342" : "#285B57";
       const repeatedCare = activity.kind === "Cuidado" && this.economy.usedCareThisWeek.includes(activity.id);
-      const label = `${index + 1} · ${activity.kind.toUpperCase()} · ${activity.name}  (${suffix} · energia ${activity.energy})${repeatedCare ? " · retorno já aplicado esta semana" : ""}`;
+      const readiness = this.activityReadiness(activity);
+      const label = `${index + 1} · ${activity.kind.toUpperCase()} · ${activity.name}  (${suffix} · energy ${activity.energy})${repeatedCare ? " · familiar, but no new growth this week" : readiness ? ` · ${readiness}` : ""}`;
       const button = this.createButton(`action-${activity.id}`, label, "100%", this.narrow ? "46px" : "50px", color, () => this.runActivity(activity.id));
       button.fontSize = this.narrow ? 10 : 13;
+      if (readiness) button.alpha = 0.64;
       content.addControl(button);
     });
   }
@@ -1308,7 +1299,7 @@ export class GameWorld {
   private addRouteCard(parent: StackPanel, id: RouteId, index: number) {
     const route = ROUTES[id];
     const state = this.states[id];
-    const status = state.complete ? "epílogo disponível" : state.needsRoutine ? `rotina pendente · capítulo ${state.chapter + 1}/${route.beats.length}` : `capítulo ${state.chapter + 1}/${route.beats.length} · ${relationshipStatus(state.metrics)}`;
+    const status = state.complete ? "an ending is ready" : state.needsRoutine ? "make room in the routine first" : `${relationshipStatus(state.metrics)} · a conversation is ready`;
     const latestMemory = state.memories.at(-1) ?? "Nenhuma memória registada ainda.";
     const label = `${index + 1}  ·  ${route.people}  —  ${status}`;
     const button = this.createButton(`route-${id}`, label, "100%", this.narrow ? "50px" : "54px", "#162642", () => this.openRoute(id));
@@ -1316,7 +1307,7 @@ export class GameWorld {
     button.thickness = 1;
     button.color = `${route.accent}C8`;
     parent.addControl(button);
-    const memory = this.text(`memory-${id}`, `Última memória: ${latestMemory}`, this.narrow ? 10 : 11, "#AEBCCD");
+    const memory = this.text(`memory-${id}`, `Latest shared memory: ${latestMemory}`, this.narrow ? 10 : 11, "#AEBCCD");
     memory.height = this.narrow ? "17px" : "18px";
     parent.addControl(memory);
   }
@@ -1449,7 +1440,7 @@ export class GameWorld {
     const memory = this.text("reflection-memory", `Diário: ${state.memories.at(-1)}`, this.narrow ? 12 : 14, "#E8B5C6");
     memory.height = this.narrow ? "45px" : "34px";
     content.addControl(memory);
-    const metrics = this.text("reflection-metrics", this.metricSummary(state), this.narrow ? 12 : 14, "#C6D0DD");
+    const metrics = this.text("reflection-metrics", this.relationshipReadout(route.id), this.narrow ? 12 : 14, "#C6D0DD");
     metrics.height = "26px";
     content.addControl(metrics);
     const isLast = state.chapter >= route.beats.length - 1;
@@ -1521,8 +1512,32 @@ export class GameWorld {
     content.addControl(back);
   }
 
-  private metricSummary(state: RelationshipState) {
-    return METRICS.map((metric) => `${metric.label}: ${state.metrics[metric.id]}/5`).join("   ·   ");
+  private relationshipReadout(routeId: RouteId) {
+    const metrics = this.states[routeId].metrics;
+    if (metrics.tension >= 4) return "This connection needs room to breathe.";
+    if (metrics.safety >= 3 && metrics.clarity >= 3 && metrics.bond >= 3) return "There is room for a careful next step.";
+    if (metrics.safety >= 3) return "Comfort is growing; keep the pace shared.";
+    if (metrics.clarity >= 2) return "The right words are beginning to make room.";
+    return "Patience and clear listening will matter here.";
+  }
+
+  private nextStepGuidance() {
+    const trio = this.states.trio;
+    if (trio.needsRoutine) return "Pamela and Jessica need an ordinary moment before the next conversation.";
+    if (trio.complete) return "A shared ending is ready whenever you want to return to their conversation.";
+    if (trio.chapter > 0) return "A conversation with Pamela and Jessica is available when you are ready to continue.";
+    return "The apartment has room for one honest first question.";
+  }
+
+  private activityReadiness(activity: (typeof ACTIVITIES)[number]) {
+    if (activity.nightOnly && this.economy.slot !== 2) return "available tonight";
+    if (this.economy.energy < activity.energy) return "rest before this";
+    if ((activity.cost ?? 0) > this.economy.personal) return "needs more personal funds";
+    if (activity.requires && !this.economy.inventory.includes(activity.requires)) return `pick up ${STORE_ITEMS.find((item) => item.id === activity.requires)?.name ?? "the item"} first`;
+    if (activity.route && activity.minChapter !== undefined && this.states[activity.route].chapter < activity.minChapter) return "needs one more conversation first";
+    if (activity.route && !meetsRouteRequirement(this.states[activity.route].metrics, activity.routeRequirement)) return "needs a steadier pace first";
+    if (activity.gated && activity.route && this.states[activity.route].metrics.safety < 3) return "build more comfort first";
+    return null;
   }
 
   private requireRoute() {
