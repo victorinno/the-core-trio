@@ -222,7 +222,7 @@
 - [x] Auditar orientação, hierarquia de informação, feedback de ações e apresentação de relações no fluxo atual.
 - [x] Definir melhorias compatíveis para próximos passos, estados emocionais e ações indisponíveis.
 - [x] Implementar o primeiro conjunto de melhorias sem reintroduzir caixas nas escolhas narrativas.
-- [ ] Validar, publicar e documentar o refinamento.
+- [x] Validar, publicar e documentar o refinamento.
 
 ### Integração com sistemas existentes
 
