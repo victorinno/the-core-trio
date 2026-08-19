@@ -29,9 +29,13 @@ test.describe("QA-01, QA-02 e QA-12 — inicialização e navegação", () => {
     expect(reset.routes.trio.memories).toHaveLength(0);
   });
 
-  test("preserva atalhos globais de mapa, casa e quarto", async ({ page }) => {
+  test("preserva atalhos globais de família, mapa, casa e quarto", async ({ page }) => {
     await openGame(page);
     await page.keyboard.press("m");
+    expect((await snapshot(page)).utilityMenu).toBe("family");
+    await page.keyboard.press("Escape");
+    expect((await snapshot(page)).utilityMenu).toBeNull();
+    await page.keyboard.press("g");
     expect((await snapshot(page)).screen).toBe("world-map");
     await page.keyboard.press("h");
     expect((await snapshot(page)).location).toBe("apartment");

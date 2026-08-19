@@ -46,6 +46,7 @@ import { meetsRouteRequirement, OPENING_LINE, ROUTES, type ConversationBeat, typ
 
 type Screen = KeyboardScreen;
 type ActionCategory = KeyboardActionCategory;
+type UtilityMenu = "calendar" | "npcs" | "bank" | "family";
 
 type E2eStatePatch = {
   screen?: Screen;
@@ -60,6 +61,7 @@ type E2eSnapshot = {
   screen: Screen;
   prologueScene: number | null;
   accessibility: { textScale: "standard" | "large"; highContrast: boolean; reducedMotion: boolean; panelOpen: boolean };
+  utilityMenu: UtilityMenu | null;
   activeRoute: RouteId | null;
   actionCategory: ActionCategory;
   location: LocationId;
@@ -106,6 +108,17 @@ const METRICS: Array<{ id: RelationshipMetric; short: string; label: string; col
   { id: "tension", short: "T", label: "Tensão", color: "#D47394" },
 ];
 
+const LOCATION_BACKDROP: Record<LocationId, "locationApartment" | "locationBedroom" | "locationDowntown" | "locationSoleil" | "locationMarket" | "locationViolet" | "locationStation" | "locationCoast"> = {
+  apartment: "locationApartment",
+  "player-room": "locationBedroom",
+  downtown: "locationDowntown",
+  soleil: "locationSoleil",
+  market: "locationMarket",
+  violet: "locationViolet",
+  station: "locationStation",
+  coast: "locationCoast",
+};
+
 export class GameWorld {
   private readonly ui: AdvancedDynamicTexture;
   private dynamicControls: Control[] = [];
@@ -121,6 +134,8 @@ export class GameWorld {
   private location: LocationId = "apartment";
   private accessibility: AccessibilitySettings = this.loadAccessibility();
   private accessibilityOpen = false;
+  private utilityMenu: UtilityMenu | null = null;
+  private locationBackground: Image | null = null;
   private narrow = window.innerWidth < 720;
   private elapsed = 0;
   private pulse: Ellipse | null = null;
@@ -195,6 +210,7 @@ export class GameWorld {
       screen: this.activeScreen,
       prologueScene: this.activeScreen === "prologue" ? this.prologueSceneIndex : null,
       accessibility: { ...this.accessibility, panelOpen: this.accessibilityOpen },
+      utilityMenu: this.utilityMenu,
       activeRoute: this.activeRoute,
       actionCategory: this.actionCategory,
       location: this.location,
@@ -258,12 +274,13 @@ export class GameWorld {
   }
 
   private createAtmosphere() {
-    const background = new Image("croe-penthouse", ASSETS.penthouse);
+    const background = new Image("croe-location-background", ASSETS.penthouse);
     background.width = "100%";
     background.height = "100%";
     background.stretch = Image.STRETCH_FILL;
     background.isPointerBlocker = false;
     this.ui.addControl(background);
+    this.locationBackground = background;
 
     const wash = new Rectangle("blue-glass-wash");
     wash.width = "100%";
@@ -417,6 +434,20 @@ export class GameWorld {
     this.render();
   }
 
+  private openUtility(utility: UtilityMenu) {
+    this.utilityMenu = this.utilityMenu === utility ? null : utility;
+    this.render();
+  }
+
+  private applyLocationBackground() {
+    if (!this.locationBackground) return;
+    if (this.activeScreen === "title" || this.activeScreen === "prologue") {
+      this.locationBackground.source = ASSETS.penthouse;
+      return;
+    }
+    this.locationBackground.source = ASSETS[LOCATION_BACKDROP[this.location]];
+  }
+
   private buildHeader(routeId: RouteId | null = this.activeRoute) {
     const bar = this.add(new Rectangle("top-bar"));
     bar.width = "100%";
@@ -472,6 +503,52 @@ export class GameWorld {
     access.onPointerClickObservable.add(() => this.toggleAccessibility());
     bar.addControl(access);
 
+    const hint = this.text("top-utility-hint", "", this.narrow ? 9 : 10, "#B8C9D9");
+    hint.width = this.narrow ? "250px" : "400px";
+    hint.height = "18px";
+    hint.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    hint.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+    hint.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    hint.left = this.narrow ? "-10px" : "-24px";
+    hint.top = "-4px";
+    bar.addControl(hint);
+
+    const rail = new StackPanel("utility-icon-rail");
+    rail.width = this.narrow ? "310px" : "540px";
+    rail.height = "32px";
+    rail.isVertical = false;
+    rail.spacing = this.narrow ? 3 : 5;
+    rail.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    rail.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+    rail.left = this.narrow ? "-10px" : "-132px";
+    bar.addControl(rail);
+    const utilities: Array<[string, string, () => void]> = [
+      ["◒", "Energy — focused actions remaining", () => this.openUtility("calendar")],
+      ["CAL", "Calendar (C) — week, day and time", () => this.openUtility("calendar")],
+      ["NPC", "NPC status (N) — availability and pace", () => this.openUtility("npcs")],
+      ["BANK", "Player bank (B) — personal money", () => this.openUtility("bank")],
+      ["FAM", "Family money (M) — shared household fund", () => this.openUtility("family")],
+      ["ROOM", "Player bedroom (Q)", () => this.returnToBedroom()],
+      ["HOME", "Home (H) — apartment", () => this.returnToApartment()],
+      ["WORLD", "World map (G)", () => this.openWorldMap()],
+    ];
+    utilities.forEach(([label, description, handler], index) => {
+      const button = Button.CreateSimpleButton(`utility-${index}`, label);
+      button.width = this.narrow ? "34px" : label.length > 3 ? "55px" : "35px";
+      button.height = "27px";
+      button.color = "#D8E6F2";
+      button.fontFamily = "Manrope";
+      button.fontSize = this.narrow ? 7 : 8;
+      button.fontWeight = "700";
+      button.background = "#10203AAA";
+      button.cornerRadius = 8;
+      button.thickness = 1;
+      button.onPointerEnterObservable.add(() => { hint.text = description; button.background = "#B84A71AA"; });
+      button.onPointerOutObservable.add(() => { hint.text = ""; button.background = "#10203AAA"; });
+      button.onPointerClickObservable.add(handler);
+      rail.addControl(button);
+    });
+
     if (routeId) {
       const state = this.states[routeId];
       const metrics = this.text(
@@ -488,7 +565,7 @@ export class GameWorld {
       bar.addControl(metrics);
     }
 
-    if (this.activeScreen !== "title" && this.activeScreen !== "prologue") {
+    if (false && this.activeScreen !== "title" && this.activeScreen !== "prologue") {
       const nav = new StackPanel("persistent-place-nav");
       nav.width = this.narrow ? "250px" : "290px";
       nav.height = "38px";
@@ -519,6 +596,40 @@ export class GameWorld {
         nav.addControl(button);
       });
     }
+  }
+
+  private buildUtilityMenu() {
+    if (!this.utilityMenu || this.activeScreen === "title" || this.activeScreen === "prologue") return;
+    const menu = this.add(this.panel("utility-context-menu", this.narrow ? "88%" : "360px", this.narrow ? "188px" : "164px", "#92B6D9"));
+    menu.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    menu.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+    menu.left = this.narrow ? "-6%" : "-24px";
+    menu.top = this.narrow ? "82px" : "92px";
+    menu.alpha = 0.97;
+    const content = new StackPanel("utility-context-content");
+    content.width = "86%";
+    content.height = "82%";
+    content.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    content.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+    content.spacing = 5;
+    menu.addControl(content);
+    const copy: Record<UtilityMenu, [string, string]> = {
+      calendar: [`WEEK ${weekNumber(this.economy)} · DAY ${this.economy.day}`, `${slotName(this.economy)} · Energy ${this.economy.energy}/4`],
+      npcs: ["WHO IS AVAILABLE", Object.values(ROUTES).map((route) => `${route.people}: ${relationshipStatus(this.states[route.id].metrics)}`).join("  ·  ")],
+      bank: ["PLAYER BANK", `Personal $${this.economy.personal} · Invested $${this.economy.invested}`],
+      family: ["FAMILY FUND", `$${this.economy.family} shared · contributions support the household`],
+    };
+    const [title, detail] = copy[this.utilityMenu];
+    const heading = this.text("utility-heading", title, this.narrow ? 13 : 14, "#BFD5EA");
+    heading.fontWeight = "700";
+    heading.height = "28px";
+    content.addControl(heading);
+    const body = this.text("utility-body", detail, this.narrow ? 13 : 15, "#FAF1E9");
+    body.height = this.narrow ? "72px" : "54px";
+    content.addControl(body);
+    const close = this.createButton("utility-close", "Close", "110px", "30px", "#385A88", () => { this.utilityMenu = null; this.render(); });
+    close.fontSize = this.narrow ? 10 : 11;
+    content.addControl(close);
   }
 
   private addPortrait(key: PortraitKey, index: number, total: number, alpha = 1) {
@@ -1218,31 +1329,24 @@ export class GameWorld {
     this.buildHeader(route.id);
     this.addPortraits(route.portraits);
 
-    const tag = this.add(this.panel("route-tag", this.narrow ? "48%" : "31%", this.narrow ? "64px" : "72px", route.accent));
+    const tag = this.add(this.text("route-people", `${route.people}  ·  STAGE ${state.chapter + 1}/${route.beats.length}`, this.narrow ? 10 : 12, route.accent));
+    tag.width = this.narrow ? "54%" : "34%";
+    tag.height = "28px";
+    tag.fontWeight = "700";
     tag.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
     tag.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+    tag.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
     tag.left = this.narrow ? "-5%" : "-4%";
-    tag.top = this.narrow ? "92px" : "108px";
-    const tagText = this.text("route-people", `${route.people}\nETAPA ${state.chapter + 1}/${route.beats.length}`, this.narrow ? 11 : 14, "#F1E5E0");
-    tagText.width = "86%";
-    tagText.height = "84%";
-    tagText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-    tagText.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-    tag.addControl(tagText);
+    tag.top = this.narrow ? "94px" : "108px";
 
-    const panel = this.add(this.panel("dialogue-panel", this.narrow ? "90%" : "61%", this.narrow ? "630px" : "450px", route.accent));
-    panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
-    panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
-    panel.left = this.narrow ? "5%" : "5%";
-    panel.top = this.narrow ? "-22px" : "-36px";
-    const content = new StackPanel("dialogue-content");
-    content.width = "86%";
-    content.height = "88%";
+    const content = this.add(new StackPanel("dialogue-content"));
+    content.width = this.narrow ? "88%" : "54%";
+    content.height = this.narrow ? "560px" : "430px";
     content.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-    content.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+    content.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+    content.top = this.narrow ? "-18px" : "-34px";
     content.isVertical = true;
     content.spacing = this.narrow ? 10 : 12;
-    panel.addControl(content);
 
     const location = this.text("location", beat.location, this.narrow ? 12 : 14, route.accent);
     location.fontWeight = "700";
@@ -1261,7 +1365,7 @@ export class GameWorld {
       memory.height = this.narrow ? "32px" : "28px";
       content.addControl(memory);
     }
-    const prompt = this.text("prompt", "Escolhe uma intenção. Ela altera o que esta relação pode conversar a seguir.", this.narrow ? 11 : 13, "#B9C7D7");
+    const prompt = this.text("prompt", "Choose an intention. It changes what this connection can speak about next.", this.narrow ? 11 : 13, "#D7E3EF");
     prompt.height = "28px";
     content.addControl(prompt);
     if (beat.interlude) {
@@ -1316,10 +1420,13 @@ export class GameWorld {
 
   private addChoiceButton(parent: StackPanel, choice: StoryChoice, index: number) {
     const color = INTENTION_COLORS[choice.intention];
-    const button = this.createButton(`choice-${choice.id}`, `${index + 1}  ·  ${choice.text}`, "100%", this.narrow ? "60px" : "62px", "#162642", () => this.choose(choice));
+    const button = this.createButton(`choice-${choice.id}`, `${index + 1}  ·  ${choice.intention.toUpperCase()} — ${choice.text}`, "100%", this.narrow ? "58px" : "60px", "#00000000", () => this.choose(choice));
     button.fontSize = this.narrow ? 12 : 15;
-    button.thickness = 1;
-    button.color = `${color}CC`;
+    button.thickness = 0;
+    button.color = "#F7F1EB";
+    button.background = "#00000000";
+    button.onPointerEnterObservable.add(() => { button.background = `${color}33`; button.color = color; });
+    button.onPointerOutObservable.add(() => { button.background = "#00000000"; button.color = "#F7F1EB"; });
     parent.addControl(button);
   }
 
@@ -1633,10 +1740,15 @@ export class GameWorld {
 
   private handleKeydown(event: KeyboardEvent) {
     if (this.accessibilityOpen && event.key === "Escape") return this.toggleAccessibility();
+    if (this.utilityMenu && event.key === "Escape") {
+      this.utilityMenu = null;
+      return this.render();
+    }
     const command = resolveKeyboardCommand(this.activeScreen, event.key);
     if (!command) return;
     if (command.type === "reset") return this.reset();
     if (command.type === "toggle-accessibility") return this.toggleAccessibility();
+    if (command.type === "open-utility") return this.openUtility(command.utility);
     if (command.type === "open-prologue") return this.openPrologue();
     if (command.type === "advance-prologue") return this.advancePrologue();
     if (command.type === "skip-prologue") return this.skipPrologue();
@@ -1676,6 +1788,7 @@ export class GameWorld {
 
   private render() {
     this.clearDynamic();
+    this.applyLocationBackground();
     if (this.activeScreen === "title") this.buildTitle();
     if (this.activeScreen === "prologue") this.buildPrologue();
     if (this.activeScreen === "dashboard") this.buildDashboard();
@@ -1691,6 +1804,7 @@ export class GameWorld {
     if (this.activeScreen === "conversation") this.buildConversation();
     if (this.activeScreen === "reflection") this.buildReflection();
     if (this.activeScreen === "finale") this.buildFinale();
+    this.buildUtilityMenu();
     if (this.accessibilityOpen) this.buildAccessibilityOverlay();
   }
 

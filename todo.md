@@ -197,6 +197,14 @@
 - [x] Implementar tamanho de texto, alto contraste, movimento reduzido e ajuda de teclado na sessão.
 - [x] Validar, publicar e registrar a primeira melhoria de UX visível.
 
+## UX de localização e navegação direta
+
+- [x] Definir a barra superior de ícones, atalhos e menus sem diálogos.
+- [x] Preparar fundos visuais para as localizações principais.
+- [x] Implementar Energia, Calendário `C`, NPCs `N`, Banco `B`, Fundo da família `M`, Quarto e Casa.
+- [x] Remover caixas de escolhas e compor botões narrativos diretamente no centro da cena.
+- [ ] Validar e publicar a UX de localização.
+
 ### Integração com sistemas existentes
 
 - [ ] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.

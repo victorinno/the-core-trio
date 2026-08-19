@@ -27,6 +27,7 @@ export type KeyboardActionCategory = "work" | "care" | "social";
 export type KeyboardCommand =
   | { type: "reset" }
   | { type: "toggle-accessibility" }
+  | { type: "open-utility"; utility: "calendar" | "npcs" | "bank" | "family" }
   | { type: "open-dashboard" }
   | { type: "open-prologue" }
   | { type: "advance-prologue" }
@@ -56,7 +57,11 @@ export function resolveKeyboardCommand(screen: KeyboardScreen, key: string): Key
   if (screen === "prologue" && key === "Enter") return { type: "advance-prologue" };
   if (screen === "prologue" && normalized === "s") return { type: "skip-prologue" };
   if (screen === "prologue") return null;
-  if (normalized === "m") return { type: "open-world-map" };
+  if (normalized === "c") return { type: "open-utility", utility: "calendar" };
+  if (normalized === "n") return { type: "open-utility", utility: "npcs" };
+  if (normalized === "b") return { type: "open-utility", utility: "bank" };
+  if (normalized === "m") return { type: "open-utility", utility: "family" };
+  if (normalized === "g") return { type: "open-world-map" };
   if (normalized === "h") return { type: "return-home" };
   if (normalized === "q") return { type: "return-room" };
 
@@ -81,7 +86,7 @@ export function resolveKeyboardCommand(screen: KeyboardScreen, key: string): Key
   }
 
   if (screen === "actions" && normalized === "w") return { type: "select-action-category", category: "work" };
-  if (screen === "actions" && normalized === "c") return { type: "select-action-category", category: "care" };
+  if (screen === "actions" && normalized === "f") return { type: "select-action-category", category: "care" };
   if (screen === "actions" && normalized === "d") return { type: "select-action-category", category: "social" };
   if (screen === "actions" && /^[1-9]$/.test(key)) return { type: "run-visible-activity", index: Number(key) - 1 };
 

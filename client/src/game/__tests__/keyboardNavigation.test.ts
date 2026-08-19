@@ -52,14 +52,18 @@ describe("resolveKeyboardCommand", () => {
     expect(resolveKeyboardCommand("conversation", "Escape")).toBeNull();
   });
 
-  it("KBD-09: keeps global map, home and room shortcuts deterministic", () => {
-    expect(resolveKeyboardCommand("dashboard", "m")).toEqual({ type: "open-world-map" });
+  it("KBD-09: keeps global utility, world, home and room shortcuts deterministic", () => {
+    expect(resolveKeyboardCommand("dashboard", "c")).toEqual({ type: "open-utility", utility: "calendar" });
+    expect(resolveKeyboardCommand("dashboard", "n")).toEqual({ type: "open-utility", utility: "npcs" });
+    expect(resolveKeyboardCommand("dashboard", "b")).toEqual({ type: "open-utility", utility: "bank" });
+    expect(resolveKeyboardCommand("dashboard", "m")).toEqual({ type: "open-utility", utility: "family" });
+    expect(resolveKeyboardCommand("dashboard", "g")).toEqual({ type: "open-world-map" });
     expect(resolveKeyboardCommand("map", "h")).toEqual({ type: "return-home" });
     expect(resolveKeyboardCommand("conversation", "q")).toEqual({ type: "return-room" });
   });
 
   it("selects a routine category and one visible activity without affecting navigation", () => {
-    expect(resolveKeyboardCommand("actions", "c")).toEqual({ type: "select-action-category", category: "care" });
+    expect(resolveKeyboardCommand("actions", "f")).toEqual({ type: "select-action-category", category: "care" });
     expect(resolveKeyboardCommand("actions", "d")).toEqual({ type: "select-action-category", category: "social" });
     expect(resolveKeyboardCommand("actions", "1")).toEqual({ type: "run-visible-activity", index: 0 });
   });
