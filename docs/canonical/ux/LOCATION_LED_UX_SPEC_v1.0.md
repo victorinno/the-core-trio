@@ -53,3 +53,7 @@ The first local canvas check after the header refactor remained on the dark back
 The cause was Babylon attempting to fetch `Shaders/layer.vertex.fx` and `Shaders/layer.fragment.fx` from the Vite fallback, which returned `index.html`. The GUI layer shaders are now embedded through explicit Babylon imports. After a clean restart, the local Week One screen rendered the apartment background, compact top rail, Energy pips, CAL/NPC/BANK/FAM/ROOM/HOME/WORLD controls and the existing dashboard.
 
 The Pamela route check confirmed the scene line, context sentence and intention buttons are drawn directly over the apartment image rather than inside a large dialogue card. The choice list remains visible as a center-screen rail, while the top utility bar stays available.
+
+## Public validation
+
+The GitHub Pages deployment for the location-led UX completed successfully. The public diagnostic confirmed the expected page title, one canvas, no page errors, no console errors and no failed asset responses.

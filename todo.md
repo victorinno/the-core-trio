@@ -203,7 +203,7 @@
 - [x] Preparar fundos visuais para as localizações principais.
 - [x] Implementar Energia, Calendário `C`, NPCs `N`, Banco `B`, Fundo da família `M`, Quarto e Casa.
 - [x] Remover caixas de escolhas e compor botões narrativos diretamente no centro da cena.
-- [ ] Validar e publicar a UX de localização.
+- [x] Validar e publicar a UX de localização.
 
 ### Integração com sistemas existentes
 
