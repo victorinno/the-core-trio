@@ -205,6 +205,12 @@
 - [x] Remover caixas de escolhas e compor botões narrativos diretamente no centro da cena.
 - [x] Validar e publicar a UX de localização.
 
+## Correção do menu de escolhas
+
+- [x] Remover título, texto de cena, instrução e trilho visual da tela de escolhas.
+- [x] Exibir somente botões de intenção soltos em uma coluna central da cena.
+- [ ] Validar e publicar a composição sem caixas.
+
 ### Integração com sistemas existentes
 
 - [ ] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.

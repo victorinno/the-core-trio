@@ -1327,53 +1327,18 @@ export class GameWorld {
     const state = this.states[route.id];
     const beat = this.resolveBeat(route, state);
     this.buildHeader(route.id);
-    this.addPortraits(route.portraits);
 
-    const tag = this.add(this.text("route-people", `${route.people}  ·  STAGE ${state.chapter + 1}/${route.beats.length}`, this.narrow ? 10 : 12, route.accent));
-    tag.width = this.narrow ? "54%" : "34%";
-    tag.height = "28px";
-    tag.fontWeight = "700";
-    tag.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
-    tag.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
-    tag.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
-    tag.left = this.narrow ? "-5%" : "-4%";
-    tag.top = this.narrow ? "94px" : "108px";
+    // Location-led UX: choices are the only central narrative UI—no dialogue box, title, copy, portrait, or prompt.
+    const choiceMenu = this.add(new StackPanel("choice-menu"));
+    choiceMenu.width = this.narrow ? "88%" : "46%";
+    choiceMenu.height = this.narrow ? "330px" : "280px";
+    choiceMenu.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    choiceMenu.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+    choiceMenu.top = this.narrow ? "26px" : "18px";
+    choiceMenu.isVertical = true;
+    choiceMenu.spacing = this.narrow ? 14 : 18;
 
-    const content = this.add(new StackPanel("dialogue-content"));
-    content.width = this.narrow ? "88%" : "54%";
-    content.height = this.narrow ? "560px" : "430px";
-    content.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-    content.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
-    content.top = this.narrow ? "-18px" : "-34px";
-    content.isVertical = true;
-    content.spacing = this.narrow ? 10 : 12;
-
-    const location = this.text("location", beat.location, this.narrow ? 12 : 14, route.accent);
-    location.fontWeight = "700";
-    location.height = "24px";
-    content.addControl(location);
-    const chapter = this.text("chapter", `${route.chapter} · ${beat.title.toUpperCase()}`, this.narrow ? 12 : 15, "#C6D0DD");
-    chapter.height = "26px";
-    content.addControl(chapter);
-    const line = this.text("route-line", beat.line, this.narrow ? 16 : 19, "#FAF1E9");
-    line.height = this.narrow ? "158px" : "122px";
-    line.lineSpacing = "5px";
-    content.addControl(line);
-    const lastMemory = state.memories.at(-1);
-    if (lastMemory) {
-      const memory = this.text("active-memory", `Memória ativa: ${lastMemory}`, this.narrow ? 11 : 13, "#E8B5C6");
-      memory.height = this.narrow ? "32px" : "28px";
-      content.addControl(memory);
-    }
-    const prompt = this.text("prompt", "Choose an intention. It changes what this connection can speak about next.", this.narrow ? 11 : 13, "#D7E3EF");
-    prompt.height = "28px";
-    content.addControl(prompt);
-    if (beat.interlude) {
-      const interlude = this.text("route-interlude-hint", "Depois desta cena, a rotina volta a fazer parte do caminho.", this.narrow ? 10 : 11, "#E8B5C6");
-      interlude.height = "22px";
-      content.addControl(interlude);
-    }
-    beat.choices.forEach((choice, index) => this.addChoiceButton(content, choice, index));
+    beat.choices.forEach((choice, index) => this.addChoiceButton(choiceMenu, choice, index));
   }
 
   private buildRouteInterlude() {
@@ -1420,12 +1385,12 @@ export class GameWorld {
 
   private addChoiceButton(parent: StackPanel, choice: StoryChoice, index: number) {
     const color = INTENTION_COLORS[choice.intention];
-    const button = this.createButton(`choice-${choice.id}`, `${index + 1}  ·  ${choice.intention.toUpperCase()} — ${choice.text}`, "100%", this.narrow ? "58px" : "60px", "#00000000", () => this.choose(choice));
-    button.fontSize = this.narrow ? 12 : 15;
+    const button = this.createButton(`choice-${choice.id}`, choice.text, "100%", this.narrow ? "60px" : "64px", "#00000000", () => this.choose(choice));
+    button.fontSize = this.narrow ? 13 : 16;
     button.thickness = 0;
     button.color = "#F7F1EB";
     button.background = "#00000000";
-    button.onPointerEnterObservable.add(() => { button.background = `${color}33`; button.color = color; });
+    button.onPointerEnterObservable.add(() => { button.background = `${color}1F`; button.color = color; });
     button.onPointerOutObservable.add(() => { button.background = "#00000000"; button.color = "#F7F1EB"; });
     parent.addControl(button);
   }
