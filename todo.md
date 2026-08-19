@@ -209,7 +209,7 @@
 
 - [x] Remover título, texto de cena, instrução e trilho visual da tela de escolhas.
 - [x] Exibir somente botões de intenção soltos em uma coluna central da cena.
-- [ ] Validar e publicar a composição sem caixas.
+- [x] Validar e publicar a composição sem caixas.
 
 ### Integração com sistemas existentes
 
