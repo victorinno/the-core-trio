@@ -211,6 +211,12 @@
 - [x] Exibir somente botões de intenção soltos em uma coluna central da cena.
 - [x] Validar e publicar a composição sem caixas.
 
+## Verificação da publicação de escolhas
+
+- [x] Inspecionar a tela de escolhas no GitHub Pages e identificar a divergência com a versão local.
+- [x] Corrigir e reenviar a fonte ou o build que estiver mantendo a interface anterior.
+- [x] Confirmar visualmente a composição publicada sem qualquer estrutura de diálogo.
+
 ### Integração com sistemas existentes
 
 - [ ] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.
