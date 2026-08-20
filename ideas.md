@@ -82,3 +82,6 @@ O logótipo é composto por **três linhas curvas que se aproximam sem se fechar
 - Nenhuma rota apresenta apenas um fundo azul: painéis de vidro, limiares em Amanhecer de Ameixa, linhas de ligação e ao menos uma âncora narrativa mantêm o penthouse habitado.
 - Telas de rotina mantêm Pamela e Jessica visíveis como presença de ensemble, enquanto a cena de escolha preserva espaço para as opções sem caixa.
 - Valores de relação não aparecem como números na cena; o estado é comunicado por leitura emocional no fluxo e pela lista textual de ritmos no menu NPC.
+- **Redesenho aceito — Quiet Presence:** a atmosfera de penthouse permanece, mas a interface deixa de usar painéis gigantes, pílulas coloridas, molduras constantes e colagens de retratos. Cada tela usa uma única superfície pequena e funcional; o cenário recupera a maior parte do ecrã.
+- A barra de utilidades passa a ser compacta e secundária. As escolhas narrativas continuam soltas, em uma coluna baixa e central, e nunca dividem espaço com uma caixa de diálogo.
+- A cor Amanhecer de Ameixa marca apenas a ação principal, foco ou consequência emocional. Não deve colorir todas as ações de rotina nem disputar atenção com a ilustração.

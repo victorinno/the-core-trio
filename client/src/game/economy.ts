@@ -5,7 +5,7 @@
 import { applyEffect, type RelationshipState } from "./relationship";
 import { meetsRouteRequirement, type RouteId, type RouteRequirement } from "./story";
 
-export type TimeSlot = "Manhã" | "Tarde" | "Noite";
+export type TimeSlot = "Morning" | "Afternoon" | "Night";
 export type InvestmentProfile = "reserve" | "neighborhood" | "violet";
 export type ItemId = "ingredients" | "book" | "plant" | "vinyl" | "dessert" | "tea" | "jessica-memento";
 export type ActivityId =
@@ -76,20 +76,20 @@ export interface Activity {
 }
 
 export const STORE_ITEMS: StoreItem[] = [
-  { id: "ingredients", name: "Ingredientes frescos", cost: 12, description: "Permitem cozinhar uma refeição de cuidado para o Croe Trio." },
-  { id: "book", name: "Livro anotado", cost: 24, description: "Um presente de conversa para Elise, disponível depois de uma escolha de escuta." },
-  { id: "plant", name: "Planta de janela", cost: 18, description: "Um gesto pequeno para Saskia, pensado para uma visita combinada." },
-  { id: "vinyl", name: "Disco de vinil", cost: 28, description: "Um convite para Raven escolher a música e o ritmo da noite." },
-  { id: "dessert", name: "Sobremesa para partilhar", cost: 16, description: "Um gesto coletivo para Pamela e Jessica, sem transformar cuidado em obrigação." },
-  { id: "tea", name: "Chá aromático", cost: 8, description: "Uma opção de bebida para Pamela escolher pelo aroma, temperatura ou memória." },
-  { id: "jessica-memento", name: "Lembrança simples para Jessica", cost: 12, description: "Só ganha sentido se Pamela quiser tornar o carinho por Jessica visível na conversa." },
+  { id: "ingredients", name: "Fresh ingredients", cost: 12, description: "They make it possible to cook a caring meal for the Croe Trio." },
+  { id: "book", name: "Annotated book", cost: 24, description: "A conversation gift for Elise, available after a listening choice." },
+  { id: "plant", name: "Window plant", cost: 18, description: "A small gesture for Saskia, meant for an agreed visit." },
+  { id: "vinyl", name: "Vinyl record", cost: 28, description: "An invitation for Raven to choose the music and the pace of the night." },
+  { id: "dessert", name: "Dessert to share", cost: 16, description: "A collective gesture for Pamela and Jessica, without turning care into obligation." },
+  { id: "tea", name: "Aromatic tea", cost: 8, description: "A drink Pamela can choose by aroma, temperature, or memory." },
+  { id: "jessica-memento", name: "A small memento for Jessica", cost: 12, description: "It only gains meaning if Pamela wants to make her care for Jessica visible in the conversation." },
 ];
 
 export const ACTIVITIES: Activity[] = [
-  { id: "rest", name: "Encerrar este bloco", kind: "Rotina", description: "Usar o tempo para respirar, organizar as ideias ou simplesmente não produzir.", energy: 0 },
-  { id: "sleep", name: "Dormir até amanhã", kind: "Rotina", description: "Encerrar a noite, recuperar energia e ver o que a agenda de amanhã oferece.", energy: 0, nightOnly: true },
-  { id: "shift", name: "Fazer turno de trabalho", kind: "Trabalho", description: "Turno inteiro. Dá folga financeira, mas consome energia e um bloco do dia.", energy: 2, income: 60 },
-  { id: "remote", name: "Aceitar trabalho remoto", kind: "Trabalho", description: "Rendimento menor e mais espaço para uma conversa no fim do dia.", energy: 1, income: 35 },
+  { id: "rest", name: "Close this time block", kind: "Rotina", description: "Use the time to breathe, sort through your thoughts, or simply not produce anything.", energy: 0 },
+  { id: "sleep", name: "Sleep until tomorrow", kind: "Rotina", description: "End the night, recover energy, and see what tomorrow offers.", energy: 0, nightOnly: true },
+  { id: "shift", name: "Take a work shift", kind: "Trabalho", description: "A full shift. It creates financial room, but costs energy and a time block.", energy: 2, income: 60 },
+  { id: "remote", name: "Accept remote work", kind: "Trabalho", description: "Less income and more room for a conversation later in the day.", energy: 1, income: 35 },
   { id: "tea-pamela", name: "Preparar bebida escolhida por Pamela", kind: "Cuidado", description: "Perguntar pelo aroma, temperatura ou lembrança antes de preparar a bebida.", energy: 1, route: "trio", minChapter: 1, effect: { bond: 1, safety: 1, memory: "Você seguiu a curiosidade de Pamela em vez de escolher por ela." } },
   { id: "find-pamela-clip", name: "Procurar o objeto esquecido com Pamela", kind: "Cuidado", description: "Acompanhar a busca sem tratar a distração dela como defeito.", energy: 1, route: "trio", minChapter: 1, effect: { bond: 1, clarity: 1, memory: "Você ajudou Pamela sem transformar distração em defeito." } },
   { id: "cook-trio", name: "Cozinhar receita escolhida com Pamela", kind: "Cuidado", description: "Preparar uma receita pelos sabores que Pamela escolher, sem usar comida como compensação.", energy: 1, requires: "ingredients", route: "trio", minChapter: 1, routeRequirement: { minimum: { safety: 3 } }, effect: { bond: 1, safety: 1, memory: "Vocês fizeram comida para descobrir um sabor, não para apagar um conflito." } },
@@ -130,7 +130,7 @@ export function createEconomyState(): EconomyState {
 }
 
 export function slotName(state: EconomyState): TimeSlot {
-  return ["Manhã", "Tarde", "Noite"][state.slot] as TimeSlot;
+  return ["Morning", "Afternoon", "Night"][state.slot] as TimeSlot;
 }
 
 const copyState = (state: EconomyState): EconomyState => ({

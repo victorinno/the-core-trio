@@ -230,6 +230,13 @@
 - [x] Comparar manutenção narrativa, UI, exportação web e custo de migração frente ao jogo atual.
 - [x] Registrar recomendação técnica e próximos passos sem alterar o motor em produção.
 
+## Redesenho de UI de date sim
+
+- [x] Auditar as proporções, a hierarquia, a navegação e os elementos ornamentais que tornam a interface atual pesada.
+- [x] Definir uma nova linguagem visual moderna com regras claras para cena, HUD, escolhas e telas de rotina.
+- [x] Reestruturar as telas principais sem mudar os sistemas narrativos, de economia ou de mapa.
+- [ ] Validar visualmente, publicar e documentar o redesenho.
+
 ### Integração com sistemas existentes
 
 - [ ] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.

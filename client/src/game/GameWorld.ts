@@ -1,6 +1,6 @@
 /**
- * STYLE — The Croe Trio is an adult ensemble romance: blue dawn, warm glass, plum honesty and relationship memory.
- * The canvas presents a map of conversations, per-route relationship state and choices that preserve autonomy.
+ * STYLE — Quiet Presence: the illustrated location owns the frame; HUD and planning sheets are restrained.
+ * Use one plum primary action, charcoal secondary rows, compact utility chrome, and frameless scene choices.
  */
 import type { Scene } from "@babylonjs/core/scene";
 import { AdvancedDynamicTexture } from "@babylonjs/gui/2D/advancedDynamicTexture";
@@ -286,7 +286,7 @@ export class GameWorld {
     wash.width = "100%";
     wash.height = "100%";
     wash.background = "#071126";
-    wash.alpha = 0.4;
+    wash.alpha = 0.5;
     wash.thickness = 0;
     wash.isPointerBlocker = false;
     this.ui.addControl(wash);
@@ -295,7 +295,7 @@ export class GameWorld {
     halo.width = "460px";
     halo.height = "460px";
     halo.background = "#B84A71";
-    halo.alpha = 0.1;
+    halo.alpha = 0.025;
     halo.thickness = 1;
     halo.color = "#D4739455";
     halo.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
@@ -317,7 +317,7 @@ export class GameWorld {
       dot.width = index === 2 ? "10px" : "6px";
       dot.height = index === 2 ? "10px" : "6px";
       dot.background = color;
-      dot.alpha = index === 2 ? 0.82 : 0.45;
+      dot.alpha = index === 2 ? 0.16 : 0.06;
       dot.thickness = 0;
       dot.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
       dot.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
@@ -337,7 +337,7 @@ export class GameWorld {
       line.width = width;
       line.height = "1px";
       line.background = color;
-      line.alpha = 0.5;
+      line.alpha = 0.12;
       line.thickness = 0;
       line.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
       line.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
@@ -354,7 +354,7 @@ export class GameWorld {
       frame.color = "#C8D7E322";
       frame.thickness = 1;
       frame.background = "#071126";
-      frame.alpha = 0.04;
+      frame.alpha = 0.01;
       frame.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
       frame.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
       frame.left = left;
@@ -399,11 +399,11 @@ export class GameWorld {
     const node = new Rectangle(name);
     node.width = width;
     node.height = height;
-    node.background = this.accessibility.highContrast ? "#020713" : "#0C1630";
-    node.alpha = this.accessibility.highContrast ? 0.99 : 0.93;
+    node.background = this.accessibility.highContrast ? "#020713" : "#0A1222";
+    node.alpha = this.accessibility.highContrast ? 0.99 : 0.88;
     node.thickness = 1;
-    node.color = `${accent}AA`;
-    node.cornerRadius = this.narrow ? 22 : 28;
+    node.color = this.accessibility.highContrast ? "#FFFFFF" : "#FFFFFF2A";
+    node.cornerRadius = this.narrow ? 8 : 10;
     return node;
   }
 
@@ -451,76 +451,76 @@ export class GameWorld {
   private buildHeader(routeId: RouteId | null = this.activeRoute) {
     const bar = this.add(new Rectangle("top-bar"));
     bar.width = "100%";
-    bar.height = this.narrow ? "76px" : "88px";
+    bar.height = this.narrow ? "54px" : "58px";
     bar.background = "#071126";
-    bar.alpha = 0.74;
+    bar.alpha = 0.58;
     bar.thickness = 0;
     bar.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
 
     const logo = new StackPanel("croe-mark");
-    logo.width = this.narrow ? "58px" : "70px";
-    logo.height = "38px";
+    logo.width = this.narrow ? "40px" : "48px";
+    logo.height = "26px";
     logo.isVertical = false;
     logo.spacing = this.narrow ? 4 : 5;
     logo.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     logo.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-    logo.left = this.narrow ? "18px" : "34px";
+    logo.left = this.narrow ? "14px" : "24px";
     bar.addControl(logo);
     ["#D69468", "#B84A71", "#92B6D9"].forEach((color, index) => {
       const curve = new Ellipse(`croe-line-${index}`);
-      curve.width = this.narrow ? "14px" : "17px";
-      curve.height = this.narrow ? "30px" : "35px";
-      curve.thickness = 2;
+      curve.width = this.narrow ? "10px" : "12px";
+      curve.height = this.narrow ? "22px" : "25px";
+      curve.thickness = 1;
       curve.color = color;
       curve.background = "#071126";
       curve.alpha = index === 1 ? 1 : 0.72;
       logo.addControl(curve);
     });
 
-    const wordmark = this.text("croe-wordmark", "THE CROE TRIO", this.narrow ? 15 : 20);
+    const wordmark = this.text("croe-wordmark", "THE CROE TRIO", this.narrow ? 13 : 16);
     wordmark.fontFamily = "DM Serif Display";
     wordmark.fontWeight = "700";
     wordmark.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     wordmark.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-    wordmark.left = this.narrow ? "87px" : "122px";
-    wordmark.width = this.narrow ? "180px" : "260px";
+    wordmark.left = this.narrow ? "62px" : "82px";
+    wordmark.width = this.narrow ? "160px" : "220px";
     bar.addControl(wordmark);
 
     const access = Button.CreateSimpleButton("open-accessibility", "A  ACCESS");
-    access.width = this.narrow ? "82px" : "98px";
-    access.height = this.narrow ? "26px" : "30px";
+    access.width = this.narrow ? "52px" : "58px";
+    access.height = this.narrow ? "23px" : "25px";
     access.color = "#E8B5C6";
     access.fontFamily = "Manrope";
-    access.fontSize = this.narrow ? 9 : 10;
+    access.fontSize = this.narrow ? 8 : 9;
     access.fontWeight = "700";
     access.background = this.accessibility.highContrast ? "#B84A71" : "#162642";
-    access.cornerRadius = 10;
+    access.cornerRadius = 7;
     access.thickness = 1;
     access.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
     access.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
-    access.left = this.narrow ? "-12px" : "-24px";
-    access.top = this.narrow ? "8px" : "10px";
+    access.left = this.narrow ? "-10px" : "-18px";
+    access.top = this.narrow ? "6px" : "7px";
     access.onPointerClickObservable.add(() => this.toggleAccessibility());
     bar.addControl(access);
 
     const hint = this.text("top-utility-hint", "", this.narrow ? 9 : 10, "#B8C9D9");
-    hint.width = this.narrow ? "250px" : "400px";
-    hint.height = "18px";
+    hint.width = this.narrow ? "220px" : "340px";
+    hint.height = "14px";
     hint.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
     hint.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
     hint.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
     hint.left = this.narrow ? "-10px" : "-24px";
-    hint.top = "-4px";
+    hint.top = "-3px";
     bar.addControl(hint);
 
     const rail = new StackPanel("utility-icon-rail");
-    rail.width = this.narrow ? "310px" : "540px";
-    rail.height = "32px";
+    rail.width = this.narrow ? "282px" : "454px";
+    rail.height = "25px";
     rail.isVertical = false;
     rail.spacing = this.narrow ? 3 : 5;
     rail.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
     rail.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-    rail.left = this.narrow ? "-10px" : "-132px";
+    rail.left = this.narrow ? "-8px" : "-86px";
     bar.addControl(rail);
     const utilities: Array<[string, string, () => void]> = [
       ["◒", "Energy — focused actions remaining", () => this.openUtility("calendar")],
@@ -534,17 +534,17 @@ export class GameWorld {
     ];
     utilities.forEach(([label, description, handler], index) => {
       const button = Button.CreateSimpleButton(`utility-${index}`, label);
-      button.width = this.narrow ? "34px" : label.length > 3 ? "55px" : "35px";
-      button.height = "27px";
+      button.width = this.narrow ? "31px" : label.length > 3 ? "48px" : "31px";
+      button.height = "23px";
       button.color = "#D8E6F2";
       button.fontFamily = "Manrope";
-      button.fontSize = this.narrow ? 7 : 8;
+      button.fontSize = this.narrow ? 6 : 7;
       button.fontWeight = "700";
-      button.background = "#10203AAA";
-      button.cornerRadius = 8;
+      button.background = "#0F1A2BCC";
+      button.cornerRadius = 6;
       button.thickness = 1;
-      button.onPointerEnterObservable.add(() => { hint.text = description; button.background = "#B84A71AA"; });
-      button.onPointerOutObservable.add(() => { hint.text = ""; button.background = "#10203AAA"; });
+      button.onPointerEnterObservable.add(() => { hint.text = description; button.background = "#223452"; });
+      button.onPointerOutObservable.add(() => { hint.text = ""; button.background = "#0F1A2BCC"; });
       button.onPointerClickObservable.add(handler);
       rail.addControl(button);
     });
@@ -635,23 +635,28 @@ export class GameWorld {
 
   private createButton(name: string, label: string, width: string, height: string, color: string, onClick: () => void) {
     const button = Button.CreateSimpleButton(name, label);
+    const primary = color === "#A93C63" || color === "#B84A71";
+    const baseBackground = primary ? "#B84A71" : "#142139E8";
     button.width = width;
     button.height = height;
     button.color = "#FFF8F2";
     button.fontFamily = "Manrope";
     button.fontSize = Math.round((this.narrow ? 14 : 16) * this.textScaleFactor());
     button.fontWeight = "700";
-    button.background = color;
-    button.cornerRadius = 16;
-    button.thickness = 0;
+    button.background = baseBackground;
+    button.cornerRadius = 8;
+    button.thickness = primary ? 0 : 1;
+    button.color = primary ? "#FFF8F2" : "#E5EDF5";
     button.hoverCursor = "pointer";
     button.onPointerEnterObservable.add(() => {
+      button.background = primary ? "#C85282" : "#223452";
       if (!this.accessibility.reducedMotion) {
         button.scaleX = 1.015;
         button.scaleY = 1.015;
       }
     });
     button.onPointerOutObservable.add(() => {
+      button.background = baseBackground;
       button.scaleX = 1;
       button.scaleY = 1;
     });
@@ -661,26 +666,25 @@ export class GameWorld {
 
   private buildTitle() {
     this.buildHeader(null);
-    this.addPortraits(["pamela", "jessica"], this.narrow ? 0.55 : 0.78);
 
     const copy = this.add(new StackPanel("title-copy"));
-    copy.width = this.narrow ? "86%" : "35%";
-    copy.height = this.narrow ? "520px" : "600px";
+    copy.width = this.narrow ? "84%" : "32%";
+    copy.height = this.narrow ? "420px" : "430px";
     copy.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     copy.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
     copy.left = this.narrow ? "8%" : "8%";
-    copy.top = this.narrow ? "-60px" : "22px";
+    copy.top = this.narrow ? "-24px" : "12px";
     copy.isVertical = true;
-    copy.spacing = this.narrow ? 14 : 18;
+    copy.spacing = this.narrow ? 12 : 14;
 
     const eyebrow = this.text("title-eyebrow", "INTERACTIVE ROMANCE · MEMORY AND CHOICE", this.narrow ? 12 : 15, "#E8B5C6");
     eyebrow.fontWeight = "700";
     eyebrow.height = "30px";
     copy.addControl(eyebrow);
-    const title = this.text("title", "The Croe\nTrio", this.narrow ? 58 : 82);
+    const title = this.text("title", "The Croe\nTrio", this.narrow ? 52 : 70);
     title.fontFamily = "DM Serif Display";
     title.fontWeight = "700";
-    title.height = this.narrow ? "142px" : "175px";
+    title.height = this.narrow ? "126px" : "148px";
     title.lineSpacing = "-8px";
     copy.addControl(title);
     const rule = new Rectangle("plum-rule");
@@ -690,31 +694,12 @@ export class GameWorld {
     rule.thickness = 0;
     rule.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     copy.addControl(rule);
-    const subtitle = this.text("title-subtitle", "A choice leaves a memory. A memory changes the next conversation.", this.narrow ? 18 : 20, "#EFE0D8");
-    subtitle.height = this.narrow ? "92px" : "118px";
+    const subtitle = this.text("title-subtitle", "A choice leaves a memory. A memory changes the next conversation.", this.narrow ? 16 : 18, "#EFE0D8");
+    subtitle.height = this.narrow ? "62px" : "72px";
     subtitle.lineSpacing = "5px";
     copy.addControl(subtitle);
 
-    const intentRail = new Rectangle("intent-rail");
-    intentRail.width = "100%";
-    intentRail.height = this.narrow ? "38px" : "42px";
-    intentRail.background = "#101F3A";
-    intentRail.alpha = 0.84;
-    intentRail.color = "#B84A7166";
-    intentRail.thickness = 1;
-    intentRail.cornerRadius = 12;
-    intentRail.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
-    const intentCopy = this.text("intent-copy", "BOND · CLARITY · SAFETY · TENSION", this.narrow ? 9 : 11, "#E8B5C6");
-    intentCopy.fontWeight = "700";
-    intentCopy.width = "92%";
-    intentCopy.height = "80%";
-    intentCopy.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-    intentCopy.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-    intentCopy.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-    intentRail.addControl(intentCopy);
-    copy.addControl(intentRail);
-
-    const start = this.createButton("start", "Begin the story", this.narrow ? "270px" : "310px", this.narrow ? "58px" : "64px", "#A93C63", () => this.openPrologue());
+    const start = this.createButton("start", "Begin the story", this.narrow ? "250px" : "270px", this.narrow ? "52px" : "54px", "#A93C63", () => this.openPrologue());
     start.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     copy.addControl(start);
     const hint = this.text("title-hint", "Enter to begin · S to skip to Week One · R to restart", this.narrow ? 12 : 14, "#B8C2D4");
@@ -854,54 +839,38 @@ export class GameWorld {
 
   private buildDashboard() {
     this.buildHeader(null);
-    this.addPortraits(["pamela", "jessica"], this.narrow ? 0.24 : 0.44);
-    const panel = this.add(this.panel("week-dashboard", this.narrow ? "90%" : "64%", this.narrow ? "690px" : "660px", "#B84A71"));
+    const panel = this.add(this.panel("week-dashboard", this.narrow ? "90%" : "48%", this.narrow ? "650px" : "540px", "#B84A71"));
     panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-    panel.left = this.narrow ? "5%" : "5%";
-    panel.top = this.narrow ? "24px" : "30px";
-    const threshold = new Rectangle("week-threshold");
-    threshold.width = this.narrow ? "6px" : "9px";
-    threshold.height = "78%";
-    threshold.background = "#B84A71";
-    threshold.alpha = 0.76;
-    threshold.thickness = 0;
-    threshold.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
-    threshold.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-    threshold.left = this.narrow ? "13px" : "19px";
-    panel.addControl(threshold);
+    panel.left = this.narrow ? "5%" : "8%";
+    panel.top = this.narrow ? "18px" : "14px";
     const content = new StackPanel("week-dashboard-content");
-    content.width = "86%";
-    content.height = "88%";
+    content.width = "84%";
+    content.height = "84%";
     content.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
     content.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
     content.isVertical = true;
-    content.spacing = this.narrow ? 8 : 8;
+    content.spacing = this.narrow ? 7 : 6;
     panel.addControl(content);
 
     const kicker = this.text("week-kicker", `SEMANA ${weekNumber(this.economy)} · DIA ${this.economy.day} · ${slotName(this.economy).toUpperCase()}${isWeekend(this.economy) ? " · FIM DE SEMANA" : ""}`, this.narrow ? 12 : 14, "#E8B5C6");
     kicker.fontWeight = "700";
     kicker.height = "24px";
     content.addControl(kicker);
-    const relationshipMark = this.text("week-relation-mark", "○  ○  ○   CURRENT FOCUS", this.narrow ? 9 : 11, "#E8B5C6");
-    relationshipMark.fontWeight = "700";
-    relationshipMark.height = "20px";
-    relationshipMark.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
-    content.addControl(relationshipMark);
-    const heading = this.text("week-heading", "What needs your attention?", this.narrow ? 32 : 42);
+    const heading = this.text("week-heading", "What needs your attention?", this.narrow ? 30 : 36);
     heading.fontFamily = "DM Serif Display";
     heading.fontWeight = "700";
-    heading.height = this.narrow ? "62px" : "70px";
+    heading.height = this.narrow ? "54px" : "60px";
     content.addControl(heading);
     const guidance = this.text("week-guidance", this.nextStepGuidance(), this.narrow ? 14 : 17, "#FAF1E9");
     guidance.height = this.narrow ? "54px" : "42px";
     guidance.lineSpacing = "3px";
     content.addControl(guidance);
-    const status = this.text("week-status", `Energy ${this.economy.energy}/4  ·  Personal §${this.economy.personal}  ·  Family §${this.economy.family}  ·  Invested §${this.economy.invested}`, this.narrow ? 12 : 15, "#C6D0DD");
-    status.height = this.narrow ? "38px" : "30px";
+    const status = this.text("week-status", `Energy ${this.economy.energy}/4  ·  Personal §${this.economy.personal}  ·  Family §${this.economy.family}`, this.narrow ? 11 : 13, "#C6D0DD");
+    status.height = this.narrow ? "30px" : "25px";
     content.addControl(status);
-    const note = this.text("week-note", "Money can prepare a moment. Care, pace, and consent determine what it means.", this.narrow ? 12 : 14, "#B9C7D7");
-    note.height = this.narrow ? "42px" : "34px";
+    const note = this.text("week-note", "Money can prepare a moment. Care, pace, and consent determine what it means.", this.narrow ? 11 : 12, "#B9C7D7");
+    note.height = this.narrow ? "34px" : "25px";
     content.addControl(note);
     if (this.economy.weeklyNotice) {
       const weeklyNotice = this.text("weekly-notice", this.economy.weeklyNotice, this.narrow ? 11 : 13, "#E7C891");
@@ -910,27 +879,26 @@ export class GameWorld {
     }
 
     const buttons: Array<[string, string, () => void, string]> = [
-      ["1 · TIME", "Choose how to show up", () => this.openScreen("actions"), "#A93C63"],
-      ["2 · BAG", "Prepare a gesture with context", () => this.openScreen("store"), "#273C60"],
-      ["3 · HOUSE", "Look after the shared resource", () => this.openScreen("wallet"), "#806342"],
-      ["4 · MARKET", "Decide how much risk fits this week", () => this.openScreen("market"), "#416A8A"],
-      ["5 · CONVERSATIONS", "See who has room to connect", () => this.openMap(), "#285B57"],
+      ["Time", "Choose how to show up", () => this.openScreen("actions"), "#A93C63"],
+      ["Gifts", "Prepare a gesture with context", () => this.openScreen("store"), "#273C60"],
+      ["Household", "Look after the shared resource", () => this.openScreen("wallet"), "#806342"],
+      ["Market", "Decide how much risk fits this week", () => this.openScreen("market"), "#416A8A"],
+      ["Conversations", "See who has room to connect", () => this.openMap(), "#285B57"],
     ];
     buttons.forEach(([title, subtitle, handler, color], index) => {
-      const button = this.createButton(`dashboard-${index}`, `${title}  —  ${subtitle}`, "100%", this.narrow ? "50px" : "52px", color, handler);
-      button.fontSize = this.narrow ? 12 : 15;
+      const button = this.createButton(`dashboard-${index}`, `${title}  —  ${subtitle}`, "100%", this.narrow ? "46px" : "42px", color, handler);
+      button.fontSize = this.narrow ? 12 : 13;
       content.addControl(button);
     });
   }
 
   private buildActions() {
     this.buildHeader(null);
-    this.addPortraits(["pamela", "jessica"], this.narrow ? 0.16 : 0.3);
-    const panel = this.add(this.panel("action-panel", this.narrow ? "90%" : "66%", this.narrow ? "700px" : "635px", "#D69468"));
+    const panel = this.add(this.panel("action-panel", this.narrow ? "90%" : "48%", this.narrow ? "650px" : "540px", "#D69468"));
     panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-    panel.left = this.narrow ? "5%" : "5%";
-    panel.top = this.narrow ? "25px" : "30px";
+    panel.left = this.narrow ? "5%" : "8%";
+    panel.top = this.narrow ? "18px" : "14px";
     const content = new StackPanel("action-content");
     content.width = "86%";
     content.height = "90%";
@@ -944,10 +912,10 @@ export class GameWorld {
     kicker.fontWeight = "700";
     kicker.height = "21px";
     content.addControl(kicker);
-    const heading = this.text("action-heading", "Choose how to show up", this.narrow ? 28 : 36);
+    const heading = this.text("action-heading", "Choose how to show up", this.narrow ? 27 : 32);
     heading.fontFamily = "DM Serif Display";
     heading.fontWeight = "700";
-    heading.height = this.narrow ? "48px" : "56px";
+    heading.height = this.narrow ? "46px" : "50px";
     content.addControl(heading);
     const prompt = this.text("action-prompt", "Care becomes meaningful once per week; work makes room; dates need a shared sense of comfort.", this.narrow ? 10 : 12, "#B9C7D7");
     prompt.height = this.narrow ? "34px" : "28px";
@@ -959,7 +927,7 @@ export class GameWorld {
       { id: "social", label: "Dates & gifts", color: "#A93C63" },
     ];
     categories.forEach((category) => {
-      const button = this.createButton(`action-category-${category.id}`, category.label, "100%", this.narrow ? "34px" : "38px", this.actionCategory === category.id ? category.color : "#162642", () => {
+      const button = this.createButton(`action-category-${category.id}`, category.label, "100%", this.narrow ? "32px" : "32px", this.actionCategory === category.id ? "#B84A71" : "#162642", () => {
         this.actionCategory = category.id;
         this.render();
       });
@@ -973,7 +941,8 @@ export class GameWorld {
       const color = activity.kind === "Trabalho" ? "#385A88" : activity.kind === "Date" ? "#A93C63" : activity.kind === "Cuidado" ? "#806342" : "#285B57";
       const repeatedCare = activity.kind === "Cuidado" && this.economy.usedCareThisWeek.includes(activity.id);
       const readiness = this.activityReadiness(activity);
-      const label = `${index + 1} · ${activity.kind.toUpperCase()} · ${activity.name}  (${suffix} · energy ${activity.energy})${repeatedCare ? " · familiar, but no new growth this week" : readiness ? ` · ${readiness}` : ""}`;
+      const kind = activity.kind === "Rotina" ? "ROUTINE" : activity.kind === "Trabalho" ? "WORK" : activity.kind === "Cuidado" ? "CARE" : activity.kind === "Presente" ? "GIFT" : "DATE";
+      const label = `${kind} · ${activity.name}  (${suffix} · energy ${activity.energy})${repeatedCare ? " · familiar, but no new growth this week" : readiness ? ` · ${readiness}` : ""}`;
       const button = this.createButton(`action-${activity.id}`, label, "100%", this.narrow ? "46px" : "50px", color, () => this.runActivity(activity.id));
       button.fontSize = this.narrow ? 10 : 13;
       if (readiness) button.alpha = 0.64;
@@ -983,7 +952,7 @@ export class GameWorld {
 
   private buildStore() {
     this.buildHeader(null);
-    const panel = this.add(this.panel("store-panel", this.narrow ? "90%" : "62%", this.narrow ? "650px" : "560px", "#D69468"));
+    const panel = this.add(this.panel("store-panel", this.narrow ? "90%" : "48%", this.narrow ? "650px" : "560px", "#D69468"));
     panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
     panel.left = this.narrow ? "5%" : "5%";
@@ -1023,7 +992,7 @@ export class GameWorld {
 
   private buildWallet() {
     this.buildHeader(null);
-    const panel = this.add(this.panel("wallet-panel", this.narrow ? "90%" : "56%", this.narrow ? "510px" : "460px", "#D69468"));
+    const panel = this.add(this.panel("wallet-panel", this.narrow ? "90%" : "46%", this.narrow ? "510px" : "460px", "#D69468"));
     panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
     panel.left = this.narrow ? "5%" : "7%";
@@ -1057,7 +1026,7 @@ export class GameWorld {
 
   private buildMarket() {
     this.buildHeader(null);
-    const panel = this.add(this.panel("market-panel", this.narrow ? "90%" : "61%", this.narrow ? "600px" : "530px", "#92B6D9"));
+    const panel = this.add(this.panel("market-panel", this.narrow ? "90%" : "48%", this.narrow ? "600px" : "530px", "#92B6D9"));
     panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
     panel.left = this.narrow ? "5%" : "6%";
@@ -1095,7 +1064,7 @@ export class GameWorld {
   private buildEconomyFeedback() {
     this.buildHeader(null);
     const update = this.economy.lastUpdate ?? { title: "Nada mudou", text: "Escolhe uma ação no quadro da semana.", costLabel: "Sem custo" };
-    const panel = this.add(this.panel("economy-feedback", this.narrow ? "90%" : "60%", this.narrow ? "430px" : "390px", update.route ? ROUTES[update.route].accent : "#B84A71"));
+    const panel = this.add(this.panel("economy-feedback", this.narrow ? "90%" : "46%", this.narrow ? "430px" : "390px", update.route ? ROUTES[update.route].accent : "#B84A71"));
     panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
     panel.left = this.narrow ? "5%" : "7%";
@@ -1134,7 +1103,7 @@ export class GameWorld {
 
   private buildWorldMap() {
     this.buildHeader(null);
-    const panel = this.add(this.panel("world-map-panel", this.narrow ? "90%" : "66%", this.narrow ? "690px" : "650px", "#86A9D4"));
+    const panel = this.add(this.panel("world-map-panel", this.narrow ? "90%" : "52%", this.narrow ? "690px" : "650px", "#86A9D4"));
     panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
     panel.left = this.narrow ? "5%" : "5%";
@@ -1182,7 +1151,7 @@ export class GameWorld {
   private buildLocation() {
     const destination = LOCATIONS[this.location];
     this.buildHeader(null);
-    const panel = this.add(this.panel("location-panel", this.narrow ? "90%" : "60%", this.narrow ? "590px" : "520px", destination.accent));
+    const panel = this.add(this.panel("location-panel", this.narrow ? "90%" : "46%", this.narrow ? "590px" : "520px", destination.accent));
     panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
     panel.left = this.narrow ? "5%" : "7%";
@@ -1266,7 +1235,7 @@ export class GameWorld {
 
   private buildMap() {
     this.buildHeader(null);
-    const panel = this.add(this.panel("map-panel", this.narrow ? "90%" : "62%", this.narrow ? "700px" : "615px"));
+    const panel = this.add(this.panel("map-panel", this.narrow ? "90%" : "48%", this.narrow ? "700px" : "615px"));
     panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
     panel.left = this.narrow ? "5%" : "5%";
