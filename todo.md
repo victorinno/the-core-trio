@@ -235,7 +235,7 @@
 - [x] Auditar as proporções, a hierarquia, a navegação e os elementos ornamentais que tornam a interface atual pesada.
 - [x] Definir uma nova linguagem visual moderna com regras claras para cena, HUD, escolhas e telas de rotina.
 - [x] Reestruturar as telas principais sem mudar os sistemas narrativos, de economia ou de mapa.
-- [ ] Validar visualmente, publicar e documentar o redesenho.
+- [x] Validar visualmente, publicar e documentar o redesenho.
 
 ### Integração com sistemas existentes
 
