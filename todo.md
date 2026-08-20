@@ -224,6 +224,12 @@
 - [x] Implementar o primeiro conjunto de melhorias sem reintroduzir caixas nas escolhas narrativas.
 - [x] Validar, publicar e documentar o refinamento.
 
+## Pesquisa de engine para date sim
+
+- [x] Pesquisar opções atuais em Python e Godot voltadas a visual novels e date sims.
+- [x] Comparar manutenção narrativa, UI, exportação web e custo de migração frente ao jogo atual.
+- [x] Registrar recomendação técnica e próximos passos sem alterar o motor em produção.
+
 ### Integração com sistemas existentes
 
 - [ ] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.
