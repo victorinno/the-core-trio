@@ -7,6 +7,7 @@ import { AdvancedDynamicTexture } from "@babylonjs/gui/2D/advancedDynamicTexture
 import { Button } from "@babylonjs/gui/2D/controls/button";
 import { Control } from "@babylonjs/gui/2D/controls/control";
 import { Ellipse } from "@babylonjs/gui/2D/controls/ellipse";
+import { Grid } from "@babylonjs/gui/2D/controls/grid";
 import { Image } from "@babylonjs/gui/2D/controls/image";
 import { Rectangle } from "@babylonjs/gui/2D/controls/rectangle";
 import { StackPanel } from "@babylonjs/gui/2D/controls/stackPanel";
@@ -837,9 +838,47 @@ export class GameWorld {
     content.addControl(close);
   }
 
+  private createPlanningTile(id: string, label: string, title: string, detail: string, primary: boolean, onClick: () => void) {
+    const tile = new Rectangle(`planning-${id}`);
+    tile.width = "48%";
+    tile.height = this.narrow ? "82px" : "86px";
+    tile.background = primary ? "#B84A71" : "#0E1B31E8";
+    tile.color = primary ? "#D96C92" : "#FFFFFF30";
+    tile.thickness = 1;
+    tile.cornerRadius = 9;
+    tile.isPointerBlocker = true;
+    tile.hoverCursor = "pointer";
+    tile.onPointerEnterObservable.add(() => { tile.background = primary ? "#C85282" : "#1D304D"; });
+    tile.onPointerOutObservable.add(() => { tile.background = primary ? "#B84A71" : "#0E1B31E8"; });
+    tile.onPointerClickObservable.add(onClick);
+
+    const content = new StackPanel(`planning-${id}-content`);
+    content.width = "82%";
+    content.height = "92%";
+    content.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    content.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+    content.isVertical = true;
+    content.spacing = 1;
+    tile.addControl(content);
+
+    const eyebrow = this.text(`planning-${id}-label`, label.toUpperCase(), this.narrow ? 8 : 9, primary ? "#FFE4EE" : "#A9BDD5");
+    eyebrow.height = "16px";
+    eyebrow.fontWeight = "700";
+    content.addControl(eyebrow);
+    const name = this.text(`planning-${id}-title`, title, this.narrow ? 14 : 16, "#FFF8F2");
+    name.fontFamily = "DM Serif Display";
+    name.fontWeight = "700";
+    name.height = "26px";
+    content.addControl(name);
+    const description = this.text(`planning-${id}-detail`, detail, this.narrow ? 8 : 9, primary ? "#FFF0F5" : "#C6D4E3");
+    description.height = "20px";
+    content.addControl(description);
+    return tile;
+  }
+
   private buildDashboard() {
     this.buildHeader(null);
-    const panel = this.add(this.panel("week-dashboard", this.narrow ? "90%" : "48%", this.narrow ? "650px" : "540px", "#B84A71"));
+    const panel = this.add(this.panel("week-dashboard", this.narrow ? "90%" : "52%", this.narrow ? "650px" : "560px", "#B84A71"));
     panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
     panel.left = this.narrow ? "5%" : "8%";
@@ -878,17 +917,31 @@ export class GameWorld {
       content.addControl(weeklyNotice);
     }
 
-    const buttons: Array<[string, string, () => void, string]> = [
-      ["Time", "Choose how to show up", () => this.openScreen("actions"), "#A93C63"],
-      ["Gifts", "Prepare a gesture with context", () => this.openScreen("store"), "#273C60"],
-      ["Household", "Look after the shared resource", () => this.openScreen("wallet"), "#806342"],
-      ["Market", "Decide how much risk fits this week", () => this.openScreen("market"), "#416A8A"],
-      ["Conversations", "See who has room to connect", () => this.openMap(), "#285B57"],
+    const hub = new Grid("planning-hub");
+    hub.width = "100%";
+    hub.height = this.narrow ? "246px" : "240px";
+    hub.addColumnDefinition(0.5);
+    hub.addColumnDefinition(0.5);
+    hub.addRowDefinition(1 / 3);
+    hub.addRowDefinition(1 / 3);
+    hub.addRowDefinition(1 / 3);
+    content.addControl(hub);
+
+    const tiles: Array<[string, string, string, string, boolean, () => void]> = [
+      ["time", "Today", "Time", "Choose how to show up", true, () => this.openScreen("actions")],
+      ["talk", "Connections", "Conversations", "See who has room to connect", false, () => this.openMap()],
+      ["map", "Places", "World map", "Choose a place to be", false, () => this.openWorldMap()],
+      ["bag", "Personal", "Bag", `${this.economy.inventory.length} items ready to use`, false, () => this.openScreen("store")],
+      ["house", "Shared", "Household", `Family fund §${this.economy.family}`, false, () => this.openScreen("wallet")],
+      ["market", "Optional", "Market", `§${this.economy.invested} currently invested`, false, () => this.openScreen("market")],
     ];
-    buttons.forEach(([title, subtitle, handler, color], index) => {
-      const button = this.createButton(`dashboard-${index}`, `${title}  —  ${subtitle}`, "100%", this.narrow ? "46px" : "42px", color, handler);
-      button.fontSize = this.narrow ? 12 : 13;
-      content.addControl(button);
+    tiles.forEach(([id, label, title, detail, primary, handler], index) => {
+      const tile = this.createPlanningTile(id, label, title, detail, primary, handler);
+      tile.width = this.narrow ? "94%" : "92%";
+      tile.height = this.narrow ? "70px" : "72px";
+      tile.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+      tile.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+      hub.addControl(tile, Math.floor(index / 2), index % 2);
     });
   }
 
@@ -1103,7 +1156,7 @@ export class GameWorld {
 
   private buildWorldMap() {
     this.buildHeader(null);
-    const panel = this.add(this.panel("world-map-panel", this.narrow ? "90%" : "52%", this.narrow ? "690px" : "650px", "#86A9D4"));
+    const panel = this.add(this.panel("world-map-panel", this.narrow ? "90%" : "58%", this.narrow ? "690px" : "650px", "#86A9D4"));
     panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
     panel.left = this.narrow ? "5%" : "5%";
@@ -1130,21 +1183,34 @@ export class GameWorld {
     note.height = this.narrow ? "34px" : "28px";
     content.addControl(note);
 
+    const destinationGrid = new Grid("destination-grid");
+    destinationGrid.width = "100%";
+    destinationGrid.height = this.narrow ? "436px" : "410px";
+    destinationGrid.addColumnDefinition(0.5);
+    destinationGrid.addColumnDefinition(0.5);
+    destinationGrid.addRowDefinition(0.25);
+    destinationGrid.addRowDefinition(0.25);
+    destinationGrid.addRowDefinition(0.25);
+    destinationGrid.addRowDefinition(0.25);
+    content.addControl(destinationGrid);
+
     const destinationIds: LocationId[] = ["apartment", "player-room", "downtown", "soleil", "market", "violet", "station", "coast"];
     destinationIds.forEach((id, index) => {
       const destination = LOCATIONS[id];
       const blocks = travelBlocks(this.location, id);
       const isHere = id === this.location;
       const coastUnavailable = id === "coast" && !isWeekend(this.economy);
-      const cost = id === "coast" ? "tempo −1 bloco · energia −1" : blocks ? "tempo −1 bloco" : "sem custo de tempo";
-      const label = isHere
-        ? `${index + 1} · ${destination.title}  —  estás aqui`
-        : `${index + 1} · ${destination.title}  —  ${coastUnavailable ? "disponível no fim de semana" : cost}`;
-      const button = this.createButton(`destination-${id}`, label, "100%", this.narrow ? "43px" : "42px", isHere ? "#285B57" : coastUnavailable ? "#23324C" : "#162642", () => this.travelTo(id));
-      button.fontSize = this.narrow ? 11 : 14;
-      button.thickness = 1;
-      button.color = `${destination.accent}C8`;
-      content.addControl(button);
+      const cost = id === "coast" ? "1 time · 1 energy" : blocks ? "1 time block" : "no time cost";
+      const state = isHere ? "Current place" : coastUnavailable ? "Weekend only" : destination.label;
+      const detail = coastUnavailable ? "Return when the weekend opens" : cost;
+      const tile = this.createPlanningTile(`destination-${id}`, state, destination.title, detail, false, () => this.travelTo(id));
+      tile.width = this.narrow ? "94%" : "92%";
+      tile.height = this.narrow ? "84px" : "82px";
+      tile.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+      tile.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+      tile.color = `${destination.accent}88`;
+      tile.alpha = coastUnavailable ? 0.56 : 1;
+      destinationGrid.addControl(tile, Math.floor(index / 2), index % 2);
     });
   }
 

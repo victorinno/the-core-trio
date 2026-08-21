@@ -237,6 +237,13 @@
 - [x] Reestruturar as telas principais sem mudar os sistemas narrativos, de economia ou de mapa.
 - [x] Validar visualmente, publicar e documentar o redesenho.
 
+## Referência Figma — apresentação de recursos
+
+- [x] Inspecionar a estrutura visual, a hierarquia e os padrões de navegação da referência fornecida.
+- [x] Identificar padrões transferíveis de apresentação de recursos sem reproduzir a arte ou a identidade visual original.
+- [x] Adaptar as telas de planejamento, mapa e recursos ao padrão selecionado.
+- [ ] Validar, publicar e registrar a adaptação.
+
 ### Integração com sistemas existentes
 
 - [ ] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.
