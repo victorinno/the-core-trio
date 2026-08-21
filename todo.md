@@ -242,7 +242,7 @@
 - [x] Inspecionar a estrutura visual, a hierarquia e os padrões de navegação da referência fornecida.
 - [x] Identificar padrões transferíveis de apresentação de recursos sem reproduzir a arte ou a identidade visual original.
 - [x] Adaptar as telas de planejamento, mapa e recursos ao padrão selecionado.
-- [ ] Validar, publicar e registrar a adaptação.
+- [x] Validar, publicar e registrar a adaptação.
 
 ### Integração com sistemas existentes
 
