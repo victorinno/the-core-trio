@@ -8,6 +8,7 @@ import type { RouteId } from "./story";
 export type KeyboardScreen =
   | "title"
   | "prologue"
+  | "main-room"
   | "dashboard"
   | "actions"
   | "store"
@@ -66,7 +67,7 @@ export function resolveKeyboardCommand(screen: KeyboardScreen, key: string): Key
   if (normalized === "q") return { type: "return-room" };
 
   if (screen === "title" && key === "Enter") return { type: "open-prologue" };
-  if (screen === "title" && normalized === "s") return { type: "open-dashboard" };
+  if (screen === "title" && normalized === "s") return { type: "return-home" };
 
   if (screen === "world-map" && /^[1-8]$/.test(key)) {
     return { type: "travel", destination: destinations[Number(key) - 1] };

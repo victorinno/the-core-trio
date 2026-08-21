@@ -156,6 +156,8 @@ export class GameWorld {
 
     if (this.demoMode === "prologue") {
       this.activeScreen = "prologue";
+    } else if (this.demoMode === "room") {
+      this.activeScreen = "main-room";
     } else if (this.demoMode === "week") {
       this.activeScreen = "dashboard";
     } else if (this.demoMode === "world") {
@@ -703,9 +705,116 @@ export class GameWorld {
     const start = this.createButton("start", "Begin the story", this.narrow ? "250px" : "270px", this.narrow ? "52px" : "54px", "#A93C63", () => this.openPrologue());
     start.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     copy.addControl(start);
-    const hint = this.text("title-hint", "Enter to begin · S to skip to Week One · R to restart", this.narrow ? 12 : 14, "#B8C2D4");
+    const hint = this.text("title-hint", "Enter to begin · S to enter the main room · R to restart", this.narrow ? 12 : 14, "#B8C2D4");
     hint.height = "26px";
     copy.addControl(hint);
+  }
+
+  private createRoomCharacterIcon(id: string, name: string, portraitKey: PortraitKey, context: string, accent: string, onClick: () => void) {
+    const anchor = new Rectangle(`room-character-${id}`);
+    anchor.width = this.narrow ? "132px" : "154px";
+    anchor.height = this.narrow ? "172px" : "188px";
+    anchor.background = "#00000000";
+    anchor.thickness = 0;
+    anchor.isPointerBlocker = true;
+    anchor.hoverCursor = "pointer";
+
+    const avatar = new Ellipse(`room-character-avatar-${id}`);
+    avatar.width = this.narrow ? "78px" : "92px";
+    avatar.height = this.narrow ? "78px" : "92px";
+    avatar.background = "#0A1425E8";
+    avatar.color = `${accent}AA`;
+    avatar.thickness = 1;
+    avatar.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    avatar.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+    avatar.top = "0px";
+    anchor.addControl(avatar);
+    const portrait = new Image(`room-character-portrait-${id}`, ASSETS[portraitKey]);
+    portrait.width = this.narrow ? "74px" : "88px";
+    portrait.height = this.narrow ? "74px" : "88px";
+    portrait.stretch = Image.STRETCH_UNIFORM;
+    portrait.isPointerBlocker = false;
+    avatar.addControl(portrait);
+
+    const nameLabel = this.text(`room-character-name-${id}`, name, this.narrow ? 16 : 19, "#FFF8F2");
+    nameLabel.fontFamily = "DM Serif Display";
+    nameLabel.fontWeight = "700";
+    nameLabel.width = "100%";
+    nameLabel.height = "30px";
+    nameLabel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    nameLabel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+    nameLabel.top = this.narrow ? "88px" : "104px";
+    nameLabel.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    anchor.addControl(nameLabel);
+    const detail = this.text(`room-character-detail-${id}`, context, this.narrow ? 9 : 10, "#C5D0DF");
+    detail.width = "100%";
+    detail.height = this.narrow ? "40px" : "42px";
+    detail.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    detail.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+    detail.top = this.narrow ? "118px" : "136px";
+    detail.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    anchor.addControl(detail);
+
+    anchor.onPointerEnterObservable.add(() => {
+      avatar.background = "#1A2A45F0";
+      avatar.thickness = 2;
+      if (!this.accessibility.reducedMotion) {
+        anchor.scaleX = 1.035;
+        anchor.scaleY = 1.035;
+      }
+    });
+    anchor.onPointerOutObservable.add(() => {
+      avatar.background = "#0A1425E8";
+      avatar.thickness = 1;
+      anchor.scaleX = 1;
+      anchor.scaleY = 1;
+    });
+    anchor.onPointerClickObservable.add(onClick);
+    return anchor;
+  }
+
+  private buildMainRoom() {
+    this.buildHeader(null);
+    const context = this.add(new StackPanel("main-room-context"));
+    context.width = this.narrow ? "84%" : "35%";
+    context.height = this.narrow ? "164px" : "180px";
+    context.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+    context.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+    context.left = this.narrow ? "8%" : "8%";
+    context.top = this.narrow ? "94px" : "112px";
+    context.isVertical = true;
+    context.spacing = this.narrow ? 6 : 8;
+
+    const eyebrow = this.text("main-room-eyebrow", "07:12 · THE LIVING ROOM", this.narrow ? 10 : 12, "#E8B5C6");
+    eyebrow.fontWeight = "700";
+    eyebrow.height = "22px";
+    context.addControl(eyebrow);
+    const heading = this.text("main-room-heading", "The room is no longer neutral.", this.narrow ? 31 : 40, "#FFF8F2");
+    heading.fontFamily = "DM Serif Display";
+    heading.fontWeight = "700";
+    heading.height = this.narrow ? "66px" : "76px";
+    context.addControl(heading);
+    const line = this.text("main-room-line", "The morning has already changed shape. Choose who you want to approach first.", this.narrow ? 13 : 15, "#D5DEEA");
+    line.height = this.narrow ? "54px" : "44px";
+    line.lineSpacing = "3px";
+    context.addControl(line);
+
+    const characterGrid = this.add(new Grid("main-room-character-grid"));
+    characterGrid.width = this.narrow ? "92%" : "540px";
+    characterGrid.height = this.narrow ? "176px" : "192px";
+    characterGrid.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    characterGrid.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+    characterGrid.top = this.narrow ? "-54px" : "-42px";
+    characterGrid.addColumnDefinition(1 / 3);
+    characterGrid.addColumnDefinition(1 / 3);
+    characterGrid.addColumnDefinition(1 / 3);
+
+    const trioStatus = this.states.trio.needsRoutine ? "Give the morning room first." : "A question is waiting between you.";
+    const aliceStatus = this.states.alice.needsRoutine ? "The conversation needs time." : "She is still at the doorway.";
+    const pamela = this.createRoomCharacterIcon("pamela", "Pamela", "pamela", trioStatus, ROUTES.trio.accent, () => this.openRoute("trio"));
+    const jessica = this.createRoomCharacterIcon("jessica", "Jessica", "jessica", "She is making room, not deciding for anyone.", ROUTES.trio.accent, () => this.openRoute("trio"));
+    const alice = this.createRoomCharacterIcon("alice", "Alice", "alice", aliceStatus, ROUTES.alice.accent, () => this.openRoute("alice"));
+    [pamela, jessica, alice].forEach((icon, index) => characterGrid.addControl(icon, 0, index));
   }
 
   private buildPrologue() {
@@ -763,7 +872,7 @@ export class GameWorld {
     copy.lineSpacing = "5px";
     copy.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
     content.addControl(copy);
-    const actionLabel = this.prologueSceneIndex === PROLOGUE_SCENES.length - 1 ? "Step into Week One" : "Continue";
+    const actionLabel = this.prologueSceneIndex === PROLOGUE_SCENES.length - 1 ? "Enter the main room" : "Continue";
     const action = this.createButton("prologue-advance", actionLabel, this.narrow ? "230px" : "250px", this.narrow ? "52px" : "56px", "#A93C63", () => this.advancePrologue());
     action.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
     content.addControl(action);
@@ -1618,7 +1727,11 @@ export class GameWorld {
   }
 
   private returnToApartment() {
-    this.travelTo("apartment");
+    this.location = "apartment";
+    this.activeRoute = null;
+    this.activeChoice = null;
+    this.activeScreen = "main-room";
+    this.render();
   }
 
   private returnToBedroom() {
@@ -1735,11 +1848,11 @@ export class GameWorld {
       this.render();
       return;
     }
-    this.openDashboard();
+    this.returnToApartment();
   }
 
   private skipPrologue() {
-    this.openDashboard();
+    this.returnToApartment();
   }
 
   private reset() {
@@ -1806,6 +1919,7 @@ export class GameWorld {
     this.applyLocationBackground();
     if (this.activeScreen === "title") this.buildTitle();
     if (this.activeScreen === "prologue") this.buildPrologue();
+    if (this.activeScreen === "main-room") this.buildMainRoom();
     if (this.activeScreen === "dashboard") this.buildDashboard();
     if (this.activeScreen === "actions") this.buildActions();
     if (this.activeScreen === "store") this.buildStore();

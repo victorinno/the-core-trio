@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { openGame, snapshot } from "./helpers";
 
 test.describe("Static cinematic prologue", () => {
-  test("opens as a held scene, advances once per Enter press, and skips cleanly to Week One", async ({ page }) => {
+  test("opens as a held scene, advances once per Enter press, and skips cleanly to the main room", async ({ page }) => {
     await openGame(page, "prologue");
     await expect.poll(() => snapshot(page)).toMatchObject({ screen: "prologue", prologueScene: 0 });
 
@@ -10,6 +10,6 @@ test.describe("Static cinematic prologue", () => {
     await expect.poll(() => snapshot(page)).toMatchObject({ screen: "prologue", prologueScene: 1 });
 
     await page.keyboard.press("s");
-    await expect.poll(() => snapshot(page)).toMatchObject({ screen: "dashboard", prologueScene: null });
+    await expect.poll(() => snapshot(page)).toMatchObject({ screen: "main-room", prologueScene: null });
   });
 });

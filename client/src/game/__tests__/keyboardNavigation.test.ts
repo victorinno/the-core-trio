@@ -14,7 +14,7 @@ describe("resolveKeyboardCommand", () => {
 
   it("KBD-02: opens the prologue from the title and allows a clean skip", () => {
     expect(resolveKeyboardCommand("title", "Enter")).toEqual({ type: "open-prologue" });
-    expect(resolveKeyboardCommand("title", "S")).toEqual({ type: "open-dashboard" });
+    expect(resolveKeyboardCommand("title", "S")).toEqual({ type: "return-home" });
     expect(resolveKeyboardCommand("dashboard", "Enter")).toBeNull();
   });
 

@@ -244,6 +244,13 @@
 - [x] Adaptar as telas de planejamento, mapa e recursos ao padrão selecionado.
 - [x] Validar, publicar e registrar a adaptação.
 
+## Sala principal interativa
+
+- [x] Mapear a passagem da introdução para o primeiro estado jogável e as informações que ela deve preservar.
+- [x] Construir a sala principal com ícones interativos de Pamela, Jessica e Alice.
+- [x] Garantir que cada interação inicial use apenas contexto já estabelecido pela introdução e pelo estado da rota.
+- [ ] Validar, publicar e documentar o novo ponto de início.
+
 ### Integração com sistemas existentes
 
 - [ ] Mapear os efeitos de tempo, energia, trabalho, descanso, carteira pessoal e Fundo da Família na rota de Pamela.
