@@ -249,7 +249,7 @@
 - [x] Mapear a passagem da introdução para o primeiro estado jogável e as informações que ela deve preservar.
 - [x] Construir a sala principal com ícones interativos de Pamela, Jessica e Alice.
 - [x] Garantir que cada interação inicial use apenas contexto já estabelecido pela introdução e pelo estado da rota.
-- [ ] Validar, publicar e documentar o novo ponto de início.
+- [x] Validar, publicar e documentar o novo ponto de início.
 
 ### Integração com sistemas existentes
 
